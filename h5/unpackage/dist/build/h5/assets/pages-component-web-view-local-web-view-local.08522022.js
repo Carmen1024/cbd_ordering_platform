@@ -1,0 +1,1 @@
+import{_ as s,au as a,o as e,d as t,w as n,e as o,ax as l,k as r}from"./vendor.1f020a26.js";var d=s({methods:{getMessage(s){a({content:JSON.stringify(s.detail),showCancel:!1})}}},[["render",function(s,a,d,g,u,c){const f=l,i=r;return e(),t(i,null,{default:n((()=>[o(f,{src:"/hybrid/html/local.html",onMessage:c.getMessage},null,8,["onMessage"])])),_:1})}]]);export{d as default};
