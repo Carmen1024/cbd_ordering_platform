@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1304875",
+      "name": "减",
+      "font_class": "jian",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "1304889",
+      "name": "添加",
+      "font_class": "tianjia",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "25133973",
+      "name": "金额",
+      "font_class": "jine",
+      "unicode": "e6c3",
+      "unicode_decimal": 59075
+    },
+    {
       "icon_id": "9826654",
       "name": "通知",
       "font_class": "tongzhi",

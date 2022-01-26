@@ -1,0 +1,1 @@
+import{a}from"./index.2c3ecc05.js";import{_ as t,a as e,c as s,o as r,d as l,w as n,e as o,k as d}from"./vendor.762bb174.js";var i=t({data:()=>({title:"当前页"})},[["render",function(t,i,c,u,f,m){const p=e(s("page-head"),a),b=d;return r(),l(b,null,{default:n((()=>[o(p,{title:f.title},null,8,["title"])])),_:1})}]]);export{i as default};

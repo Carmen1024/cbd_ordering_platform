@@ -137,6 +137,7 @@
 			&-item{
 				margin:0 20rpx;
 				padding:20rpx 0;
+				height: 30rpx;
 				border-bottom: solid 1px #ddd;
 				.left{
 					color:#333;

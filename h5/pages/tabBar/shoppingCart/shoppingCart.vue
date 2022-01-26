@@ -1,7 +1,10 @@
 <template>
 	<view class="shopping-container">
 		<view class="title">
-			<view class="left">购物车<text>({{commodityData.length}})</text></view>
+			<view class="left">
+				<text>购物车</text>
+				<text>({{commodityData.length}})</text>
+			</view>
 			<view class="right">
 				<text>推荐订货</text>
 				<text>编辑商品</text>
@@ -92,17 +95,20 @@
 			height: 100rpx;
 			view{
 				margin: 20rpx;
-				font-size: 36rpx;
+				font-size: 38rpx;
 				font-weight: bold;
-				text{
-					font-size: 22rpx;
+			}
+			.left{
+				text:last-child{
+					line-height: 50rpx;
+					font-size: 26rpx;
 					font-weight: 400;
 				}
 			}
 			.right{
 				text{
 					margin-left: 10rpx;
-					font-size: 20rpx;
+					font-size: 28rpx;
 					color:#666;
 				}
 			}
@@ -128,7 +134,7 @@
 					height: 150rpx;
 				}
 				.detail{
-					width: calc(100% - 300rpx);
+					width: calc(100% - 200rpx);
 					height: 150rpx;
 					line-height: 50rpx;
 					font-size: 26rpx;
@@ -185,10 +191,11 @@
 					font-weight: bold;
 				}
 				.mini-btn{
-					margin: 25rpx 20rpx;
+					margin: 20rpx 20rpx;
 					border-radius: 20rpx;
-					height: 50rpx;
-					line-height: 50rpx;
+					height: 60rpx;
+					line-height: 60rpx;
+					font-size: 30rpx;
 				}
 			}
 		}
