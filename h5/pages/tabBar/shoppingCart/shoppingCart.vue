@@ -2,30 +2,33 @@
 	<view class="shopping-container">
 		<view class="title">
 			<view class="left">
+				<image class="logo" src="/static/logo.jpg"></image>
 				<text>购物车</text>
-				<text>({{commodityData.length}})</text>
+				<text>({{countAndPrice.total}})</text>
 			</view>
-			<view class="right">
+<!-- 			<view class="right">
 				<text>推荐订货</text>
 				<text>编辑商品</text>
-			</view>
+			</view> -->
 		</view>
 		<view class="commodityList">
-			<checkbox-group @change="checkboxChange" class="commodityItem" v-for="(item,index) in commodityData">
+			<checkbox-group @change="checkboxChange" class="commodityItem" v-for="(item,index) in cartMaterialList">
 				<checkbox :checked="item.checked" />
 				<image :src="item.img || '/static/logo.jpg'"></image>
 				<view class="detail">
-					<view class="name">{{item.name}}</view>
-					<view class="unit">{{item.unit}}</view>
+					<view class="name">{{item.m_name || '物料名称'}}</view>
+					<view class="unit">500g*30袋/箱</view>
 					<view class="price">
 						<text class="total">
 							<span class="icon iconfont icon-jine"></span>
-							{{item.price}}
+							<text v-if="item.m_prices">
+								{{item.m_prices[0].m_p_money}}
+							</text>
 						</text>
 						<view class="numHandle">
-							<text><span class="icon iconfont icon-jian"></span></text>
-							<input class="uni-input" type="text" :value="item.num" @input="dataChange"/>
-							<text><span class="icon iconfont icon-tianjia"></span></text>
+							<text @click="jian(item)"><span class="icon iconfont icon-jian"></span></text>
+							<input class="uni-input" type="text" :value="item.m_c_count" @input="dataChange"/>
+							<text @click="jia(item)"><span class="icon iconfont icon-tianjia"></span></text>
 						</view>
 					</view>
 				</view>
@@ -37,8 +40,8 @@
 			</view>
 			<view class="right">
 				<text>总计:</text>
-				<text class="priceTotal"><span class="icon iconfont icon-jine"></span>1223.00</text>
-				<uni-button class="mini-btn" type="primary" size="mini">结算</uni-button>
+				<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
+				<button type="primary" size="mini">结算</button>
 			</view>
 		</view>
 	</view>
@@ -46,22 +49,28 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
+	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList } from '@/api/subscribe'
 	export default defineComponent({
 		setup() {
 			
-			const commodityData = ref([
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-				{id:"",name:"芝士奶盖浆",unit:"2kg*6袋/箱",price:528.00,num:2,img:''},
-			])
+			const countAndPrice = ref({})
+			const cartMaterialList = ref([])
+			
+			const getCartCountAndPrice=()=>{
+				cartCountAndPrice({"s_id": "10"}).then(res=>{
+					countAndPrice.value = res.data;
+				})
+			}
+			getCartCountAndPrice();
+			const getCartList=()=>{
+				cartList({"s_id": "10"}).then(res=>{
+					cartMaterialList.value = res.data;
+				})
+			}
+			getCartList();
 			return {
-				commodityData
+				countAndPrice,
+				cartMaterialList
 			}
 		},
 		methods: {
@@ -79,7 +88,32 @@
 			},
 			dataChange(){
 				
+			},
+			jian(item){
+				item.m_c_count--
+				console.log("增加减少",item)
+			},
+			jia(item){
+				item.m_c_count++
+				console.log("增加减少",item)
+			},
+			cartHandle(params){
+				// {
+				// 	"m_id":"02c0dba51df84274bd30f0ee420f4e72",
+				//     "m_c_count":1,
+				//     "m_c_unit":1,
+				//     "s_id":"10"
+				//   }
+				 cartInsert(params).then(res=>{
+					 
+					// uni.showModal({
+					// 	content: '已加入购物车！',
+					// 	showCancel: false
+					// })
+					this.getCartCountAndPrice();
+				 })
 			}
+			
 		}
 	})
 </script>
@@ -99,6 +133,13 @@
 				font-weight: bold;
 			}
 			.left{
+				image{
+					float: left;
+					margin-right: 10rpx;
+					width: 50rpx;
+					height: 50rpx;
+					border-radius: 50%;
+				}
 				text:last-child{
 					line-height: 50rpx;
 					font-size: 26rpx;
@@ -187,6 +228,7 @@
 			}
 			.right{
 				display: flex;
+				align-items: baseline;
 				.priceTotal{
 					font-weight: bold;
 				}

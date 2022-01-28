@@ -1,7 +1,9 @@
 <template>
 	<view class="card-container">
 		<view v-for="(item,index) in listData" class="card-container-item">
-			<text class="type"><span :class="`icon iconfont icon-${item.value}`"></span></text>
+			<view class="type">
+				<span :class="`icon iconfont icon-${item.value}`"></span>
+			</view>
 			<text class="title">{{item.label}}</text>
 			<!-- <text class="desc">{{item.desc}}</text> -->
 		</view>
@@ -50,9 +52,17 @@
 				display: block;
 			}
 			.type{
-				color: $uni-color-primary;
+				// color: $uni-color-primary;
+				margin-bottom: 10rpx;
+				height: 80rpx;
+				line-height: 80rpx;
+				overflow: hidden;
 				.iconfont{
-					font-size: 50rpx;	
+					font-size: 50rpx;
+					color:#fff;
+					background: $uni-color-primary;
+					padding:15rpx;
+					border-radius: 50%;
 				}
 			}
 			.title{
