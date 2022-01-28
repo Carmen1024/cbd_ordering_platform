@@ -1,24 +1,29 @@
 <template>
 	<view class="reaction-container" v-show="reactionMaterials.show">
 		<view class="title">
-			<text>关联物料</text>
+			<text>关联物料（{{reactionMaterials.materials.length}}）</text>
 		</view>
 		<view class="commodityList">
 			<view class="commodityItem" v-for="(item,index) in reactionMaterials.materials">
 				<image :src="item.img || '/static/logo.jpg'"></image>
 				<view class="detail">
 					<view class="name">{{item.m_name || '物料名称'}}</view>
-					<view class="unit">500g*30袋/箱</view>
-					<view class="price">
-						<text class="total">
+					<view class="unit">
+						<text class="left">500g*30袋/箱</text>
+						<text class="right">
 							<span class="icon iconfont icon-jine"></span>
 							<text v-if="item.m_prices">
-								{{item.m_prices[0].m_p_money}}
+								{{item.m_prices[0].m_p_money}}/箱
 							</text>
+							<text v-else>100/箱</text>
+						</text>
+					</view>
+					<view class="price">
+						<text class="left total">
+							关联件数：{{item.r_m_count}}
 						</text>
 						<view class="right numHandle" @click="jia(item)">
 							<span class="icon iconfont icon-goumai"></span>
-							<text v-if="item.num && item.num>0">{{item.num}}</text>
 						</view>
 					</view>
 				</view>
@@ -44,24 +49,25 @@
 		},
 		setup(props) {
 			// const cartInsert = ()=>{
-			const jia=(item)=>{
-				console.log(item);
-				// r_m_count: 275
-				// r_m_id: "a94d15dc7f1f414c8c25d91c038ccbc5"
-				// const params = {
-				// 	"m_id":item._id,
-				//     "m_c_count":1,
-				//     "m_c_unit":1,
-				//     "s_id":"10"
-				// }
-				// toCartInsert(params)
-			}
+
 			
 			// },
 			return {
-				jia,
+				
 			}
 		},
+		methods:{
+			jia(item){
+				console.log(item);
+				const params = {
+					"m_id":item.r_m_id,
+				    "m_c_count":item.r_m_count,
+				    "m_c_unit":1,
+				    "s_id":"10"
+				}
+				this.$emit("jiaReaction",params)
+			}
+		}
 	})
 </script>
 <style lang="scss" scoped>
@@ -105,46 +111,33 @@
 					height: 150rpx;
 				}
 				.detail{
-					width: calc(100% - 200rpx);
+					width: calc(100% - 150rpx);
 					height: 150rpx;
 					line-height: 50rpx;
 					font-size: 26rpx;
 					.name{
 						font-weight: bold;
+						height: 50rpx;
 					}
 					.unit{
+						width: 100%;
+						height: 40rpx;
 						color:#666;
 						font-size: 20rpx;
 					}
 					.price{
 						width: 100%;
+						height: 60rpx;
+						line-height: 60rpx;
 						.total{
-							color:#005bac;
-							font-size: 30rpx;
-							.iconfont{
-								font-size:18rpx
-							}
+							width: 50%;
 						}
 						.numHandle{
-							position: relative;
 							.iconfont{
 								border-radius: 50%;
 								padding:10rpx;
 								color:#fff;
 								background-color: $uni-color-primary;
-							}
-							text{
-								position: absolute;
-								text-align: center;
-								width: 30rpx;
-								height: 30rpx;
-								line-height: 30rpx;
-								font-size: 20rpx;
-								top: -5rpx;
-								right: -5rpx;
-								border-radius: 50%;
-								color:#fff;
-								background-color: #fc758e;
 							}
 						}
 					}

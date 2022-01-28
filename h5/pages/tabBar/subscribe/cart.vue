@@ -12,7 +12,7 @@
 					<text>总计:</text>
 					<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
 				</view>
-				<button type="primary" size="mini">去购物车</button>
+				<button type="primary" size="mini" class="toCart">去购物车</button>
 			</view>
 		</view>
 	</view>
@@ -41,6 +41,13 @@
 				
 			}
 		},	
+		methods:{
+			toCart(){
+				uni.switchTab({
+				    url: '/pages/tabBar/shoppingCart/shoppingCart'
+				});
+			}
+		}
 	})
 </script>
 <style lang="scss" scoped>

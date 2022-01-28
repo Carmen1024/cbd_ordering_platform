@@ -2,7 +2,6 @@
 	<view class="shopping-container">
 		<view class="title">
 			<view class="left">
-				<image class="logo" src="/static/logo.jpg"></image>
 				<text>购物车</text>
 				<text>({{countAndPrice.total}})</text>
 			</view>
@@ -11,9 +10,9 @@
 				<text>编辑商品</text>
 			</view> -->
 		</view>
-		<view class="commodityList">
-			<checkbox-group @change="checkboxChange" class="commodityItem" v-for="(item,index) in cartMaterialList">
-				<checkbox :checked="item.checked" />
+		<checkbox-group @change="checkboxChange" class="commodityList">
+			<view class="commodityItem" v-for="(item,index) in cartMaterialList">
+				<checkbox :checked="item.checked" :value="item.m_id" />
 				<image :src="item.img || '/static/logo.jpg'"></image>
 				<view class="detail">
 					<view class="name">{{item.m_name || '物料名称'}}</view>
@@ -27,13 +26,13 @@
 						</text>
 						<view class="numHandle">
 							<text @click="jian(item)"><span class="icon iconfont icon-jian"></span></text>
-							<input class="uni-input" type="text" :value="item.m_c_count" @input="dataChange"/>
+							<input class="uni-input" type="text" :value="item.m_c_count" @confirm="dataChange(item)"/>
 							<text @click="jia(item)"><span class="icon iconfont icon-tianjia"></span></text>
 						</view>
 					</view>
 				</view>
-			</checkbox-group>
-		</view>
+			</view>
+		</checkbox-group>
 		<view class="account">
 			<view class="left">
 				<checkbox value="cb" checked="false" />全选
@@ -41,7 +40,7 @@
 			<view class="right">
 				<text>总计:</text>
 				<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
-				<button type="primary" size="mini">结算</button>
+				<button type="primary" size="mini" @click="submit">去下单</button>
 			</view>
 		</view>
 	</view>
@@ -49,12 +48,21 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList } from '@/api/subscribe'
+	import { cartCountAndPrice,cartInsert,cartMaterialsUpdate,cartList } from '@/api/subscribe'
+	import { orderConfirm } from '@/api/order'
 	export default defineComponent({
 		setup() {
 			
 			const countAndPrice = ref({})
 			const cartMaterialList = ref([])
+			
+			const toCartInsert=(params)=>{
+				 
+				 cartInsert(params).then(res=>{
+					 getCartCountAndPrice();
+				 })
+			}
+			
 			
 			const getCartCountAndPrice=()=>{
 				cartCountAndPrice({"s_id": "10"}).then(res=>{
@@ -68,50 +76,92 @@
 				})
 			}
 			getCartList();
+			
+			const toOrder=()=>{
+				
+			}
+			
 			return {
 				countAndPrice,
-				cartMaterialList
+				cartMaterialList,
+				toCartInsert,
+				toOrder
 			}
 		},
 		methods: {
 			checkboxChange(e) {
-				var items = this.items,
+				var items = this.cartMaterialList,
 					values = e.detail.value;
-				for (var i = 0, lenI = items.length; i < lenI; ++i) {
-					const item = items[i]
-					if(values.includes(item.value)){
-						this.$set(item,'checked',true)
-					}else{
-						this.$set(item,'checked',false)
-					}
-				}
+					items.map(item=>{
+						if(values.includes(item.m_id)){
+							this.$set(item,'checked',true)
+						}else{
+							this.$set(item,'checked',false)
+						}
+					})
 			},
-			dataChange(){
-				
+			dataChange(item){
+				console.log(item);
+				const params={
+					"_id": item._id,
+					"s_id": "10",
+					"m_c_count": item.m_c_count,
+					"m_id": item.m_id
+				}
+				// cartMaterialsUpdate(params).then(res=>{
+				// 	this.getCartCountAndPrice();
+				// })
+			},
+			reduce(item){
+				item.m_c_count--
+				const params = {
+					"m_id":item.m_id,
+				    "m_c_count":-1,
+				    "m_c_unit":1,
+				    "s_id":"10"
+				}
+				this.toCartInsert(params)
 			},
 			jian(item){
-				item.m_c_count--
-				console.log("增加减少",item)
+				console.log("减少",item)
+				if(item.m_c_count<=1){
+					uni.showModal({
+						content: '是否确认删除该物料',
+						showCancel: true,
+						success: function (res) {
+							if (res.confirm) {
+								this.reduce(item)
+							}
+						}
+					})
+				}else{
+					this.reduce(item)
+				}
+
 			},
 			jia(item){
 				item.m_c_count++
-				console.log("增加减少",item)
+				const params = {
+					"m_id":item.m_id,
+				    "m_c_count":1,
+				    "m_c_unit":1,
+				    "s_id":"10"
+				}
+				this.toCartInsert(params)
 			},
 			cartHandle(params){
-				// {
-				// 	"m_id":"02c0dba51df84274bd30f0ee420f4e72",
-				//     "m_c_count":1,
-				//     "m_c_unit":1,
-				//     "s_id":"10"
-				//   }
 				 cartInsert(params).then(res=>{
-					 
-					// uni.showModal({
-					// 	content: '已加入购物车！',
-					// 	showCancel: false
-					// })
 					this.getCartCountAndPrice();
 				 })
+			},
+			submit(){
+				const checkList = this.cartMaterialList.filter(item=>{
+					return item.checked
+				})
+				console.log(checkList);
+				// uni.navigateTo({
+				//   url: 'pages/order/order',
+				// })
 			}
 			
 		}
