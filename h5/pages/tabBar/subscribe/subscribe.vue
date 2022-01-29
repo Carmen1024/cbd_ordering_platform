@@ -18,7 +18,9 @@
 					<view>{{item.clf_name}}</view>
 				</view>
 			</view>
-			<view class="right materialList">
+			<scroll-view class="right scroll-Y materialList"
+				scroll-y="true" lower-threshold="50"
+				@scrolltolower="lower" @scroll="scroll">
 				<view class="materialItem" v-for="(item,index) in materialData">
 					<view v-if="item.isFirst" class="classify">
 						{{item.classifyName}}
@@ -55,7 +57,8 @@
 						</view>
 					</view>
 				</view>
-			</view>
+				<view class="loading">{{loading?'加载中':'到底喽'}}</view>
+			</scroll-view>
 		</view>
 		<reaction :reactionMaterials="reactionMaterials" @jiaReaction="toCartInsert" />
 		<cart :countAndPrice="countAndPrice" />
@@ -76,7 +79,13 @@
 			const classifyData = ref([])
 			const materialData = ref([])
 			const countAndPrice = ref({})
+			const page = {
+				"pageSize":20,
+				"pageNum":1
+			}
 			const scrollClassifyIndex = ref(0)
+			const scrollTop = ref(0)
+			const loading = ref(true)
 			
 			const jia = (item)=>{
 				item.num++
@@ -119,15 +128,15 @@
 			}
 			getClassifyQuery();
 			const getMaterialQuery=()=>{
-				const params={
-					"pageSize":10,
-					"pageNum":1
-				}
-				materialQuery(params).then(res=>{
-					materialData.value = res.data.map(item=>{
+				materialQuery(page).then(res=>{
+					const data = res.data.map(item=>{
 						item.num = 0
 						return item
 					})
+					if(data.length<page.pageSize) loading.value = false;
+					materialData.value = [...materialData.value,...data]
+					
+					page.pageNum++;
 				})
 			}
 			getMaterialQuery();
@@ -141,7 +150,7 @@
 				})
 			}
 			getCartCountAndPrice();
-			
+						
 			return {
 				classifyData,
 				materialData,
@@ -150,7 +159,10 @@
 				getCartCountAndPrice,
 				jia,
 				toCartInsert,
-				reactionMaterials
+				reactionMaterials,
+				scrollTop,
+				getMaterialQuery,
+				loading
 			}
 		},
 		methods: {
@@ -158,7 +170,10 @@
 				this.scrollClassifyIndex = index;
 				console.log("切换tab",item)
 			},
-			
+			lower: function(e) {
+				console.log(e)
+				this.loading && this.getMaterialQuery();
+			},
 		}
 		
 	})
@@ -174,7 +189,7 @@
 			width: 100%;
 			height: 100rpx;
 			border-bottom: solid 1px rgba(0, 0, 0, .1);
-			background: #f5f5f5;
+			// background: #f5f5f5;
 			view{
 				margin: 20rpx;
 				font-size: 38rpx;
@@ -208,7 +223,7 @@
 				// border-right: solid 1px #ddd;
 				.classifyItem{
 					padding:20rpx 10rpx;
-					line-height: 30rpx;
+					line-height: 40rpx;
 				}
 				.openClassify{
 					background-color: #fff;
@@ -219,7 +234,12 @@
 				height: 100%;
 				overflow-x: hidden;
 				overflow-y:auto;
-				// background-color: #f5f5f5;
+				.loading{
+					text-align: center;
+					padding:30rpx 0;
+					// height: 80rpx;
+					color:#999;
+				}
 				.materialItem{
 					margin: 20rpx;
 					width: calc(100% - 60rpx);
@@ -241,6 +261,7 @@
 							margin: 0 10rpx;
 							width: 150rpx;
 							height: 150rpx;
+							border-radius: 20rpx;
 						}
 						.detail{
 							width: calc(100% - 170rpx);

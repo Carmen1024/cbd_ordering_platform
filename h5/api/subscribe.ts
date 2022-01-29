@@ -5,7 +5,7 @@ export function classifyQuery(data: object) {
   return request({
     url: '/classify/queryClassifyList',
     method: 'post',
-	domin : "http://192.168.99.5:8001",
+	domin : "http://192.168.99.174:8001",
     data
   })
 }

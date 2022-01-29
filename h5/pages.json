@@ -26,7 +26,7 @@
 		    "path" : "pages/tabBar/subscribe/subscribe",
 		    "style": {
 		        "navigationBarTitleText": "订货",
-		    	"navigationStyle":"custom"
+		    	"navigationStyle":"custom",
 		    }
 		    
 		}
@@ -43,6 +43,13 @@
 		    "style": {
 		        "navigationBarTitleText": "我的订单",
 		    	"navigationStyle":"custom"
+		    }
+		},{
+		    "path" : "pages/tabBar/order/detail",
+		    "style": {
+		        "navigationBarTitleText": "订单详情",
+		    	// "navigationStyle":"custom"
+				"enablePullDownRefresh": true
 		    }
 		},
 		{

@@ -2,6 +2,7 @@
 	<view class="shopping-container">
 		<view class="title">
 			<view class="left">
+				<span class="icon iconfont icon-goumai"></span>
 				<text>购物车</text>
 				<text>({{countAndPrice.total}})</text>
 			</view>
@@ -34,9 +35,9 @@
 			</view>
 		</checkbox-group>
 		<view class="account">
-			<view class="left">
+<!-- 			<view class="left">
 				<checkbox value="cb" checked="false" />全选
-			</view>
+			</view> -->
 			<view class="right">
 				<text>总计:</text>
 				<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
@@ -159,9 +160,27 @@
 					return item.checked
 				})
 				console.log(checkList);
-				// uni.navigateTo({
-				//   url: 'pages/order/order',
-				// })
+				if(checkList.length==0){
+					uni.showToast({
+					    title: '您还没有选择物料哦',
+					    duration: 2000,
+						icon:"none"
+					});
+					return
+				}
+				uni.navigateTo({
+				    url: '/pages/order/order',
+				    events: {
+				      // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
+				      // acceptDataFromOpenedPage: function(data) {
+				      //   console.log(data)
+				      // },
+				    },
+				    success: function(res) {
+				      // 通过eventChannel向被打开页面传送数据
+				      res.eventChannel.emit('acceptDataFromOpenerPage', { data: {checkList} })
+				    }
+				})
 			}
 			
 		}
@@ -188,12 +207,21 @@
 					margin-right: 10rpx;
 					width: 50rpx;
 					height: 50rpx;
+					line-height: 50rpx;
 					border-radius: 50%;
 				}
 				text:last-child{
 					line-height: 50rpx;
 					font-size: 26rpx;
 					font-weight: 400;
+				}
+				.iconfont{
+					background-color: $uni-color-primary;
+					border-radius: 50%;
+					margin-right: 10rpx;
+					padding:10rpx;
+					font-size: 30rpx;
+					color:#fff;
 				}
 			}
 			.right{
@@ -223,6 +251,7 @@
 					margin: 0 10rpx;
 					width: 150rpx;
 					height: 150rpx;
+					border-radius: 20rpx;
 				}
 				.detail{
 					width: calc(100% - 200rpx);

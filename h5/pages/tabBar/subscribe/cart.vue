@@ -12,7 +12,7 @@
 					<text>总计:</text>
 					<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
 				</view>
-				<button type="primary" size="mini" class="toCart">去购物车</button>
+				<button type="primary" size="mini" @click="toCart">去购物车</button>
 			</view>
 		</view>
 	</view>
@@ -56,7 +56,7 @@
 		bottom: 100rpx;
 		left: 0;
 		width: 100%;
-		background-color: #f5f5f5;
+		// background-color: #f5f5f5;
 		.account{
 			width: 100%;
 			height: 100rpx;

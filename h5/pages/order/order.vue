@@ -12,20 +12,18 @@
 			</view>	  
 		</view>
 		<view class="commodityList">
-			<view class="commodityItem" v-for="(item,index) in cartMaterialList">
+			<view class="commodityItem" v-for="(item,index) in orderInformation.materialsMsg">
 				<image :src="item.img || '/static/logo.jpg'"></image>
 				<view class="detail">
-					<view class="name">{{item.m_name || '物料名称'}}</view>
+					<view class="name">{{item.o_m_name || '物料名称'}}</view>
 					<view class="unit">500g*30袋/箱</view>
 					<view class="price">
 						<text class="total">
 							<span class="icon iconfont icon-jine"></span>
-							<text v-if="item.m_prices">
-								{{item.m_prices[0].m_p_money}}
-							</text>
+							{{item.m_price || 10}}
 						</text>
 						<view class="numHandle">
-							<text>{{item.m_c_count}}</text>
+							<text>{{item.o_m_count}}</text>
 						</view>
 					</view>
 				</view>
@@ -34,7 +32,7 @@
 		<view class="other">
 			<view class="other-item">
 				<text class="left">优惠券</text>
-				<text class="right">5张可使用<span class="icon iconfont icon-right"></span></text>
+				<view class="right" ><text class="color-primary">5张可使用</text><span class="icon iconfont icon-right"></span></view>
 			</view>
 			<view class="other-item">
 				<text class="left">账户余额</text>
@@ -60,7 +58,7 @@
 					<text>合计：</text>
 					<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{orderInformation.totalPrice}}</text>
 				</view>
-				<button class="uni-button" type="primary" size="mini">去结算</button>
+				<button class="uni-button" type="primary" size="mini" @click="submit">去结算</button>
 			</view>
 		</view>
 	</view>
@@ -68,130 +66,82 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { cartCountAndPrice,cartInsert,cartMaterialsUpdate,cartList } from '@/api/subscribe'
-	import { orderConfirm } from '@/api/order'
+	import { orderConfirm,createOrder } from '@/api/order'
 	export default defineComponent({
+		onLoad(option){
+		  // #ifdef APP-NVUE
+		  const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+		  // #endif
+		  // #ifndef APP-NVUE
+		  const eventChannel = this.getOpenerEventChannel();
+		  const _this = this;
+		  // #endif
+		  // eventChannel.emit('acceptDataFromOpenedPage', {data: 'data from test page'});
+		  // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
+		  eventChannel.on('acceptDataFromOpenerPage', function(data) {
+			uni.showLoading({
+			    title: '加载中'
+			});
+		    console.log(data)
+			_this.cartMaterialList = data.data.checkList
+			console.log(_this.cartMaterialList);
+			_this.getOrderInf();
+		  })
+		},
 		setup() {
-			const cartMaterialList = ref([
-				{
-					"m_c_unit": 1,
-					"c_order": 1,
-					"is_rela": 0,
-					"c_version": 1,
-					"m_extends": [
-						{
-							"m_ext_name": "500g*30袋",
-							"_id": "３",
-							"m_ext_val": "500g*30袋",
-							"m_id": "a94d15dc7f1f414c8c25d91c038ccbc5"
-						}
-					],
-					"c_struct_version": 1,
-					"c_update_time": "2022-01-28 16:00:07",
-					"m_order_step_type": 1,
-					"c_update_user": "default",
-					"c_del": 0,
-					"c_valid": 1,
-					"m_order_upper": 1,
-					"m_order_lower": 1,
-					"s_id": "10",
-					"m_name": "消毒剂2",
-					"m_pic": "",
-					"c_create_time": "2022-01-28 14:32:09",
-					"m_status": 2,
-					"m_prices": [
-						{
-							"m_p_money": 6000,
-							"m_p_currency": 1,
-							"_id": "14",
-							"m_p_type": 1,
-							"m_id": "a94d15dc7f1f414c8c25d91c038ccbc5"
-						}
-					],
-					"m_units": [
-						{
-							"m_u_unit": 1,
-							"m_u_count": 1,
-							"m_u_type": 4,
-							"m_u_su_id": "",
-							"m_id": "a94d15dc7f1f414c8c25d91c038ccbc5"
-						}
-					],
-					"_id": "b0768082500c472ca560fcd7dac0bc20",
-					"m_c_count": 2,
-					"c_create_user": "default",
-					"m_id": "a94d15dc7f1f414c8c25d91c038ccbc5",
-					"checked": true
-				},
-				{
-					"m_c_unit": 1,
-					"c_order": 1,
-					"is_rela": 0,
-					"c_version": 1,
-					"m_extends": null,
-					"c_struct_version": 1,
-					"c_update_time": "2022-01-28 11:33:56",
-					"m_order_step_type": 1,
-					"c_update_user": "default",
-					"c_del": 0,
-					"c_valid": 1,
-					"m_order_upper": 1,
-					"m_order_lower": 1,
-					"s_id": "10",
-					"m_name": "软化",
-					"m_pic": "",
-					"c_create_time": "2022-01-28 11:33:41",
-					"m_status": 2,
-					"m_prices": [
-						{
-							"m_p_money": 1000,
-							"m_p_currency": 2,
-							"_id": "6",
-							"m_p_type": 3,
-							"m_id": "859e700ba166417497e6fb874b144b8f"
-						}
-					],
-					"m_units": [
-						{
-							"m_u_unit": 1,
-							"m_u_count": 1,
-							"m_u_type": 4,
-							"m_u_su_id": "",
-							"m_id": "859e700ba166417497e6fb874b144b8f"
-						}
-					],
-					"_id": "862006f77ecf4e5bb97179b2df6f4dd0",
-					"m_c_count": 2,
-					"c_create_user": "default",
-					"m_id": "859e700ba166417497e6fb874b144b8f",
-					"checked": true
-				}
-			])
+			const cartMaterialList = ref({})
 			const orderInformation = ref({})
+			const cartList = ref({})
 			
 			const getOrderInf=()=>{
-				const cartList = cartMaterialList.value.map(item=>{
-					 return {"m_id": item.m_id,"count": item.m_c_count,"unit": "1"}
+				console.log(cartMaterialList.value);
+				cartList.value = cartMaterialList.value.map(item=>{
+					 return {
+						 "m_id": item.m_id,
+						 "count": item.m_c_count,
+						 "unit": "1",
+						 "c_id": item._id
+					 }
 				})
 				const params = {
 					"a_id": "1", //地址ID
 					"s_id": "10",//门店ID
 					"r_g_id": "1", //区域ID
-					"materials":cartList
+					"materials":cartList.value
 				}
 				orderConfirm(params).then(res=>{
 					orderInformation.value = res.data
 				})
+				uni.hideLoading();
 			}
-			getOrderInf();
+			const submit=()=>{
+				const params={
+					"a_id": "1", //地址ID
+					"s_id": "10",//门店ID
+					"r_g_id": "1", //区域ID
+					"materials": cartList.value
+				}
+				createOrder(params).then(res=>{
+					uni.showToast({
+					    title: '创建订单成功',
+					    duration: 2000
+					});
+					setTimeout(function() {
+						uni.switchTab({
+							url: '/pages/tabBar/order/order',
+						})
+					}, 2000);
+				})
+			}
 			
 			return {
 				cartMaterialList,
-				cartList,
 				getOrderInf,
-				orderInformation
+				orderInformation,
+				cartList,
+				submit
 			}
-		}
+		},
 	})
 </script>
 

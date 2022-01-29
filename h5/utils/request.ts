@@ -1,5 +1,6 @@
-const host = "http://192.168.99.5:8009"
+const host = "http://192.168.99.174:8009"
 // const host1 = "http://192.168.99.5:8001"
+//http://192.168.99.5:8009
 
 export const request = ({url,method,data,domin=host})=>{
 	const params={
