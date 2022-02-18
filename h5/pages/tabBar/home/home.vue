@@ -7,13 +7,13 @@
 				<view class="user">
 					<image class="logo" src="/static/logo.jpg"></image>
 					<view>
-						<view class="username">张三</view>
+						<view class="username">{{userName}}</view>
 						<!-- <view class="userid">id:12121212</view> -->
 					</view>
 				</view>
 				<view class="store">
 					<view class="left">
-						<text>茶百道成都双楠店</text>
+						<text>{{mine.store_address}}</text>
 					</view>
 					<button type="primary" size="mini">更换门店</button>
 				</view>
@@ -22,21 +22,23 @@
 		<view class="account">
 			<view class="account-item">
 				<text class="left">我的收货地址</text>
-				<text class="right">管理我的地址<span class="icon iconfont icon-right"></span></text>
+				<text class="right">
+					<navigator :url="'/pages/address/address'">管理我的地址<span class="icon iconfont icon-right"></span></navigator>
+				</text>
 			</view>
-			<view class="account-item">
+<!-- 			<view class="account-item">
 				<text class="left">发票抬头管理</text>
 				<text class="right">管理增票资质<span class="icon iconfont icon-right"></span></text>
-			</view>
-		</view>
-		<view class="account">
+			</view> -->
+<!-- 		</view>
+		<view class="account"> -->
 			<view class="account-item">
 				<text class="left">账户余额</text>
-				<text class="right">1000元<span class="icon iconfont icon-right"></span></text>
+				<text class="right">{{mine.store_remain}}元<span class="icon iconfont icon-right"></span></text>
 			</view>
 			<view class="account-item">
 				<text class="left">优惠券</text>
-				<text class="right">5张可使用<span class="icon iconfont icon-right"></span></text>
+				<text class="right">{{mine.store_coupon>0 ? `${mine.store_coupon}张可使用`:'暂无可使用的优惠券'}}<span class="icon iconfont icon-right"></span></text>
 			</view>
 			<view class="account-item">
 				<text class="left">意见反馈</text>
@@ -51,14 +53,34 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
+	import { getStorageSync } from '@/utils/token'
+	import { mineQuery } from "@/api/home"
 	export default defineComponent({
+		onShow: function() {
+			this.getMineQuery();
+		},
 		setup() {
+			const userName = ref("")
+			const mine = ref({})
 			const descData = ref([
 				{value:"",label:"我的订单"},
 				{value:"",label:"我的订单"},
 			])
+			userName.value = getStorageSync("userName") || "张三"
+			
+			const getMineQuery = ()=>{
+				const params={ "s_id":"10","token":"71061cbdf40e29a23d58cddd052e714c"}
+				mineQuery(params).then(res=>{
+					mine.value = res.data
+					//store_user_name: "17828019562"
+					// store_user_phone: "17828019562"
+				})
+			}
+			
 			return {
-				
+				userName,
+				mine,
+				getMineQuery
 			}
 		}
 	})

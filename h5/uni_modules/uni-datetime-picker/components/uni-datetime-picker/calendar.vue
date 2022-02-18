@@ -705,7 +705,7 @@
 		text-align: center;
 		width: 100px;
 		font-size: 14px;
-		color: #005bac;
+		color: #007aff;
 		/* #ifndef APP-NVUE */
 		letter-spacing: 3px;
 		/* #endif */
@@ -884,7 +884,7 @@
 		border-radius: 100px;
 		height: 40px;
 		line-height: 40px;
-		background-color: #005bac;
+		background-color: #007aff;
 		color: #fff;
 		font-size: 16px;
 		letter-spacing: 5px;

@@ -5,9 +5,9 @@
 				<image class="logo" src="/static/logo.jpg"></image>
 				<text>茶百道双楠店</text>
 			</view>
-<!-- 			<view class="right">
-				搜索按钮
-			</view> -->
+			<view class="right" @click="toSearch">
+				<span class="icon iconfont icon-sousuo"></span>搜索
+			</view>
 		</view>
 		<view class="shopping-container-main">
 			<view class="left classifyList">
@@ -18,45 +18,11 @@
 					<view>{{item.clf_name}}</view>
 				</view>
 			</view>
-			<scroll-view class="right scroll-Y materialList"
+			<scroll-view ref="materialMod" class="right scroll-Y materialList"
 				scroll-y="true" lower-threshold="50"
+				:scroll-into-view="classifyDomId"
 				@scrolltolower="lower" @scroll="scroll">
-				<view class="materialItem" v-for="(item,index) in materialData">
-					<view v-if="item.isFirst" class="classify">
-						{{item.classifyName}}
-					</view>
-					<view class="material">
-						<image :src="item.img || '/static/logo.jpg'"></image>
-						<view class="detail">
-							<!-- 
-							m_order_upper	订购上限。
-							m_order_step_type	订货规则，1:按倍数递增,2:按逐1递增
-							m_order_lower	订购下限。
-							{{item.m_prices || 100}}/{{item.m_units || '箱'}}
-							-->
-							<view class="name">{{item.m_name || '物料名称'}}</view>
-							<view class="unit">
-								<text class="left">500g*30袋/箱</text>
-								<text class="right">
-									<span class="icon iconfont icon-jine"></span>
-									<text v-if="item.m_prices">
-										{{item.m_prices[0].m_p_money}}/箱
-									</text>
-									<text v-else>100/箱</text>
-								</text>
-							</view>
-							<view class="price">
-								<view class="left total">
-									库存量：{{item.m_stock || 999}}
-								</view>
-								<view class="right numHandle" @click="jia(item)">
-									<span class="icon iconfont icon-goumai"></span>
-									<text v-if="item.num && item.num>0">{{item.num}}</text>
-								</view>
-							</view>
-						</view>
-					</view>
-				</view>
+				<material-item :materialData="materialData" @jiaReaction="toCartInsert" @jianReaction="getCartCountAndPrice" />
 				<view class="loading">{{loading?'加载中':'到底喽'}}</view>
 			</scroll-view>
 		</view>
@@ -69,11 +35,17 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import cart from './cart'
 	import reaction from './reaction'
-	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList } from '@/api/subscribe'
+	import materialItem from './materialItem'
+	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList,cartDel } from '@/api/subscribe'
 	export default defineComponent({
 		components:{
 			cart,
-			reaction
+			reaction,
+			materialItem
+		},
+		onShow: function() {
+			this.getCartCountAndPrice();
+			this.getCartList();
 		},
 		setup() {
 			const classifyData = ref([])
@@ -86,17 +58,9 @@
 			const scrollClassifyIndex = ref(0)
 			const scrollTop = ref(0)
 			const loading = ref(true)
+			const classifyDomId = ref("")
+			const topList = ref([])
 			
-			const jia = (item)=>{
-				item.num++
-				const params = {
-					"m_id":item._id,
-				    "m_c_count":1,
-				    "m_c_unit":1,
-				    "s_id":"10"
-				}
-				toCartInsert(params)
-			}
 			const toCartInsert=(params)=>{
 				 
 				 cartInsert(params).then(res=>{
@@ -117,6 +81,22 @@
 					 }
 				 })
 			}
+			//获取购物车的数量
+			const cartMaterialList = ref([])
+			const getCartList=()=>{
+				cartMaterialList.value = []
+				cartList({"s_id": "10"}).then(res=>{
+					cartMaterialList.value = res.data || []
+					scrollClassifyIndex.value = 0
+					scrollTop.value = 0
+					loading.value = true
+					classifyDomId.value = ""
+					topList.value = []
+					materialData.value = []
+					page.pageNum = 1
+					getMaterialQuery();
+				})
+			}
 			const getClassifyQuery=()=>{
 				const params={
 					"clf_inner_type": true,
@@ -128,18 +108,29 @@
 			}
 			getClassifyQuery();
 			const getMaterialQuery=()=>{
-				materialQuery(page).then(res=>{
+				const params = {
+					r_g_id:"10",
+					s_id:"10",
+					...page
+				}
+				materialQuery(params).then(res=>{
+					console.log(cartMaterialList.value);
 					const data = res.data.map(item=>{
-						item.num = 0
+						const select = cartMaterialList.value.find(select => select.m_id === item._id)
+						console.log(select);
+						item.num = select ? select.m_c_count : 0
 						return item
 					})
 					if(data.length<page.pageSize) loading.value = false;
 					materialData.value = [...materialData.value,...data]
 					
 					page.pageNum++;
+					
+					setTimeout(() => {
+						setTopList();
+					}, 100)
 				})
 			}
-			getMaterialQuery();
 			const reactionMaterials = ref({
 				show:false,
 				materials:[]
@@ -149,7 +140,15 @@
 					countAndPrice.value = res.data;
 				})
 			}
-			getCartCountAndPrice();
+			const setTopList = ()=>{
+				topList.value = classifyData.value.map(item=>{
+					const classifyId = item._id
+					const classifyDomId = "classify_"+classifyId
+					const classifyDom = document.getElementById(classifyDomId)
+					return document.getElementById(classifyDomId) && document.getElementById(classifyDomId).offsetTop
+				}).filter(item=>item)
+				console.log(topList.value);
+			}
 						
 			return {
 				classifyData,
@@ -157,25 +156,89 @@
 				scrollClassifyIndex,
 				countAndPrice,
 				getCartCountAndPrice,
-				jia,
 				toCartInsert,
 				reactionMaterials,
 				scrollTop,
 				getMaterialQuery,
-				loading
+				loading,
+				page,
+				classifyDomId,
+				topList,
+				setTopList,
+				getCartList
 			}
 		},
 		methods: {
 			classifyCheck(item,index){
-				this.scrollClassifyIndex = index;
-				console.log("切换tab",item)
+				// const params = {classifyId:item._id,this.page}
+				this.scrollClassifyIndex = index
+				const classifyId = item._id
+				const classifyDomId = "classify_"+classifyId
+				const classifyDom = document.getElementById(classifyDomId)
+				if(classifyDom){
+					this.classifyDomId = classifyDomId
+				}else{
+					const lastM = this.materialData[this.materialData.length-1]
+					const lastMId = lastM._id
+					const params = {
+						r_g_id:"10",
+						s_id:"10",
+						classifyId,lastMId,pageSize:this.page.pageSize,
+					}
+					
+					materialQuery(params).then(res=>{
+						const data = res.data.map(item=>{
+							item.num = 0
+							return item
+						})
+						if(data.length<this.page.pageSize) this.loading = false
+						
+						this.materialData = [...this.materialData,...data]
+						
+						this.page.pageNum=++res.pageNum;
+						
+						
+						setTimeout(() => {
+							this.classifyDomId = classifyDomId
+							this.setTopList();
+						}, 100)
+						
+					})
+				}
+				
 			},
 			lower: function(e) {
 				console.log(e)
-				this.loading && this.getMaterialQuery();
+				this.loading && this.getMaterialQuery()
 			},
-		}
+			//后期再优化一下效率
+			scroll:function(e){
+				// document.getElementById(classifyDomId)
+				const scrollTop = e.detail.scrollTop + 10
+				const topList = this.topList
+				let scrollClassifyIndex = null
+				for(let i=0;i<topList.length;i++){
+					const i_ = i+1
+					// console.log(topList[i],scrollTop,topList[i_])
+					if((i==topList.length-1) && scrollTop>topList[i]){
+						scrollClassifyIndex = i
+						this.scrollClassifyIndex = i
+					}else if(scrollTop>topList[i] && scrollTop<=topList[i_]){
+						scrollClassifyIndex = i
+						this.scrollClassifyIndex = i
+					}
+					// console.log("scrollClassifyIndex",scrollClassifyIndex)
+					if(scrollClassifyIndex) break
+				}
+			},
+			toSearch(){
+				uni.navigateTo({
+					url: '/pages/tabBar/subscribe/search',
+				})
+			},
+	
 		
+		},
 	})
 </script>
 
@@ -186,18 +249,17 @@
 		height: calc(100vh - 50px);
 		overflow: hidden;
 		&-title{
-			width: 100%;
-			height: 100rpx;
+			width: calc(100% - 40rpx);
+			padding:20rpx;
+			height: 60rpx;
+			line-height: 60rpx;
 			border-bottom: solid 1px rgba(0, 0, 0, .1);
-			// background: #f5f5f5;
-			view{
-				margin: 20rpx;
+			.left{
 				font-size: 38rpx;
 				font-weight: bold;
-			}
-			.left{
+				display: flex;
+				align-items: center;
 				.logo{
-					float: left;
 					margin-right: 10rpx;
 					width: 50rpx;
 					height: 50rpx;
@@ -205,9 +267,12 @@
 				}
 			}
 			.right{
-				margin-left: 10rpx;
-				font-size: 28rpx;
-				color:#666;
+				padding:0 10rpx;
+				line-height: 50rpx;
+				border-radius: 30rpx;
+				border: solid 1px $uni-color-primary;
+				color:$uni-color-primary;
+				background-color: #fff;
 			}
 			
 		}

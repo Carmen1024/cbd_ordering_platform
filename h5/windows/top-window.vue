@@ -3,7 +3,7 @@
 		<view class="left-header logo">
 			<navigator class="logo" open-type="reLaunch" url="/pages/component/view/view">
 				<image src="../static/logo.jpg" mode="heightFix" style="width: 30px;"></image>
-				<text>小茶订货</text>
+				<text>茶茶订货</text>
 			</navigator>
 		</view>
 		<custom-tab-bar class="tab-bar-flex" direction="horizontal" :show-icon="false" :selected="current" @onTabItemTap="toSecondMenu" />
@@ -72,7 +72,7 @@
 				const activeTabBar = '/' + e.pagePath
 				for(const item of this.indexPage) {
 					if (activeTabBar === item.tabBar) {
-						uni.redirectTo({
+						uni.switchTab({
 							url: item.index
 						})
 					}

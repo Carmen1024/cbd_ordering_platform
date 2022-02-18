@@ -1,35 +1,103 @@
 <template>
 	<view class="order-container">
-		<uni-search-bar @confirm="search" @input="input" placeholder="请输入关键字"></uni-search-bar>
-		<view class="tab">
-			<text class="check">全部</text>
-			<text>待支付</text>
-			<text>待验收</text>
-			<text>待退货</text>
-			<text>售后</text>
+		<view class="condition">
+			<uni-search-bar
+				class="left"
+				@confirm="search"
+				radius="20"
+				maxlength="30"
+				bgColor="#fff"
+				placeholder="请输入订单号查询">
+			</uni-search-bar>
+			<text class="right">
+				<span class="icon iconfont icon-riqi" @click="showTime=showTime?false:true"></span>
+			</text>
 		</view>
-		<view class="orderData" v-if="orderData">
-			<view class="orderItem" v-for="(item,index) in orderData" @click="toOrderDetail(item)">
-				<!--  -->
-				<view class="title">
-					<text class="left">订单号:{{item.o_p_code}}</text>
-					<!-- <text class="right">{{item.o_s_status_desc}}</text> -->
-				</view>
-				<view class="materials">
-					<view v-for="(material,index) in item.sub_order_materials">
-						<image :src="item.img || '/static/logo.jpg'"></image>
+		<view class="timeMod" v-show="showTime">
+			<uni-datetime-picker
+				ref="datetimePicker"
+				v-model="datetimerange"
+				type="daterange"
+				start="2021-01-01"
+				end="2022-02-28"
+				rangeSeparator="至"
+				clear-icon
+				@change="timeChange"
+			/>
+		</view>
+		<view class="tab">
+			<text v-for="item in tabOptions" @click="checkTab(item)" :class="tabIndex==item.value && 'check'">
+				{{item.label}}
+			</text>
+		</view>
+		<scroll-view 
+			class="right scroll-Y orderData" v-if="orderData.length>0"
+			scroll-y="true" lower-threshold="50"
+			@scrolltolower="lower"
+		>
+			<view v-for="(item,index) in orderData">
+				<view class="orderItem" @click="toOrderDetail(item)">
+					<!--  -->
+					<view class="title">
+						<text class="left">{{item.o_p_code}}</text>
+						<view class="right">
+							<text>{{item.o_s_status_desc}}</text>
+							<!-- <text>{{item.o_s_status_desc}}</text> -->
+						</view>
+					</view>
+					<view class="materialList">
+						<view class="materialItem" v-for="(material,index) in item.sub_order_materials" v-show="index<3">
+							<image :src="material.img || '/static/logo.jpg'"></image>
+							<view class="detail">
+								<view class="name">{{material.o_m_name || '物料名称'}}</view>
+								<view class="price">
+									<text class="total">
+										<span class="icon iconfont icon-jine"></span>{{material.o_m_price}}
+									</text>
+									<view class="numHandle">
+										<text>x{{material.o_m_count}}</text>
+									</view>
+								</view>
+							</view>
+						</view>
+						<view v-show="item.sub_order_materials.length>3" class="more">
+							查看更多 <span class="icon iconfont icon-right"></span>
+						</view>
+					</view>
+					<view class="msg" v-if="item.o_s_status==1">
+						<view class="detail">
+							<!-- <text>总价<span class="icon iconfont icon-jine"></span>{{item.o_p_origin_money || 0}}</text> -->
+							<!-- <text>优惠<span class="icon iconfont icon-jine"></span>{{Math.abs(item.o_p_discount_money) || 0}}</text> -->
+							<view class="left"><text>{{item.c_create_time}}</text></view>
+							<view class="right">
+								<text>共计：{{item.s_o_m_num}}件,</text>
+								<text class="price">需付款<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money || 0}}</text>
+							</view>
+						</view>
+						<view class="numHandle">
+							<button class="uni-button" size="mini">取消订单</button>
+							<button type="primary" size="mini" @click="submit">去付款</button>
+						</view>
+					</view>
+					<view class="msg" v-else>
+						<view class="detail">
+							<view class="left"><text>{{item.c_create_time}}</text></view>
+							<view class="right">
+								<text>共计：{{item.s_o_m_num}}件,</text>
+								<text class="price">实付款：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
+							</view>
+						</view>
+						<view class="numHandle">
+							<button size="mini">再次购买</button>
+						</view>
 					</view>
 				</view>
-				<view class="detail">
-					<text class="name">共计：{{item.s_o_m_num}}件</text>
-					<text class="price" v-if="item.o_s_status==1">{{item.o_s_status_desc}}</text>
-					<text class="price" v-else>实付款：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
-				</view>
-				<view class="numHandle">
-					<button v-if="item.o_s_status==1" type="primary" size="mini" @click="submit">去付款</button>
-					<button size="mini" v-else>再次购买</button>
-				</view>
 			</view>
+			<view class="loading">{{loading?'加载中':'到底喽'}}</view>
+		</scroll-view>
+		<view v-else class="noData">
+			<view><span class="icon iconfont icon-chargeManagement"></span></view>
+			<view>您还没有相关的订单</view>
 		</view>
 	</view>
 </template>
@@ -37,123 +105,120 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { orderList } from '@/api/order'
-	import { statusData } from './enum'
+	import { statusData,tabOptions } from './enum'
 	export default defineComponent({
+		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
+			console.log("onLoad")
+			console.log(option.tabIndex); //打印出上个页面传递的参数。
+			const tabItem = tabOptions.find(item=>item.value == option.tabIndex)
+			// this.o_id = option.o_id;
+			tabItem && this.setTab(tabItem);
+		},
+		onShow: function() {
+			console.log("onShow")
+			this.getOrderData();
+		},
 		setup() {
 			
 			const orderData = ref([])
 			
+			const page = ref({
+				"pageSize":20,
+				"pageNum":1
+			})
+			const condition = ref({
+				o_p_code:"",
+				c_create_start_time:"",
+				c_create_end_time:"",
+				o_s_status:[1,2,3,4,5,6,7,8,9,10,11]
+			})
+			
+			const loading = ref(true)
+			const tabIndex = ref(1)
+			const datetimerange = ref(["2021-03-20", "2021-05-10"])
+			const showTime = ref(false)
+			
 			const getOrderData=()=>{
 				const params ={
 					"s_id": "10",
-					"pageNum":1,
-					"pageSize":10
+					...page.value,
+					...condition.value
 				}
 				orderList(params).then(res=>{
 					console.log(res);
-					orderData.value = res.data.map(item=>{
-							const select = statusData.find(select => select.value === item.o_s_status)
-							item.o_s_status_desc = select ?  select.label : item.o_s_status
-							return item
+					const data = res.data.map(item=>{
+						const select = statusData.find(select => select.value === item.o_s_status)
+						item.o_s_status_desc = select ?  select.label : item.o_s_status
+						return item
 					});
-					// .map(d=>{
-					// })
-					console.log(orderData);
+					if(data.length<page.value.pageSize) loading.value = false;
+					orderData.value = [...orderData.value,...data]
+					
+					page.value.pageNum++;
 				})
 			}
-			getOrderData();
 			
 			const toOrderDetail=(item)=>{
 				uni.navigateTo({
-				    url: '/pages/tabBar/order/detail?o_id='+item.o_id
+				    url: '/pages/tabBar/order/detail?_id='+item._id
 				})
 			}
 			
 			return {
 				orderData,
-				toOrderDetail
+				toOrderDetail,
+				getOrderData,
+				loading,
+				tabOptions,
+				tabIndex,
+				page,
+				datetimerange,
+				showTime,
+				condition
 			}
 		},
 		methods: {
-			checkboxChange(e) {
-				var items = this.orderData,
-					values = e.detail.value;
-					items.map(item=>{
-						if(values.includes(item.m_id)){
-							this.$set(item,'checked',true)
-						}else{
-							this.$set(item,'checked',false)
-						}
-					})
+			lower: function(e) {
+				console.log(e)
+				this.loading && this.getOrderData();
 			},
-			dataChange(item){
-				console.log(item);
-				const params={
-					"_id": item._id,
-					"s_id": "10",
-					"m_c_count": item.m_c_count,
-					"m_id": item.m_id
-				}
-				// cartMaterialsUpdate(params).then(res=>{
-				// 	this.getCartCountAndPrice();
-				// })
+			checkTab(item){
+				this.setTab(item)
+				this.getOrderData()
 			},
-			reduce(item){
-				item.m_c_count--
-				const params = {
-					"m_id":item.m_id,
-				    "m_c_count":-1,
-				    "m_c_unit":1,
-				    "s_id":"10"
-				}
-				this.toCartInsert(params)
+			setTab(item){
+				this.tabIndex = item.value
+				this.condition.o_s_status = item.status
+				this.page.pageNum = 1
+				this.orderData = []
 			},
-			jian(item){
-				console.log("减少",item)
-				if(item.m_c_count<=1){
-					uni.showModal({
-						content: '是否确认删除该物料',
-						showCancel: true,
-						success: function (res) {
-							if (res.confirm) {
-								this.reduce(item)
-							}
-						}
-					})
+			timeChange(e){
+				console.log(e);
+				if(e.length==0){
+					delete this.condition.c_create_start_time
+					delete this.condition.c_create_end_time
 				}else{
-					this.reduce(item)
+					this.condition.c_create_start_time=e[0] + " 00:00:00"
+					this.condition.c_create_end_time=e[1] + " 23:59:59"
 				}
-
+				this.page.pageNum = 1
+				this.orderData = []
+				this.getOrderData()
 			},
-			jia(item){
-				item.m_c_count++
-				const params = {
-					"m_id":item.m_id,
-				    "m_c_count":1,
-				    "m_c_unit":1,
-				    "s_id":"10"
+			search(e){
+				console.log(e);
+				if(e.length==0){
+					delete this.condition.o_p_code
+				}else{
+					this.condition.o_p_code=e.value
 				}
-				this.toCartInsert(params)
+				this.page.pageNum = 1
+				this.orderData = []
+				this.getOrderData()
 			},
-			cartHandle(params){
-				 cartInsert(params).then(res=>{
-					this.getCartCountAndPrice();
-				 })
-			},
-			submit(){
-				const checkList = this.orderData.filter(item=>{
-					return item.checked
-				})
-				console.log(checkList);
-				uni.navigateTo({
-				    url: '/pages/order/order',
-				    success: function(res) {
-				      // 通过eventChannel向被打开页面传送数据
-				      res.eventChannel.emit('acceptDataFromOpenerPage', { data: {checkList} })
-				    }
-				})
+			openPicker(){
+				this.$refs.datetimePicker.show()
 			}
-			
 		}
 	})
 </script>
@@ -165,14 +230,26 @@
 		height: calc(100vh - 50px);
 		overflow: hidden;
 		background-color: #f5f5f5;
-		.uni-searchbar{
-			background-color: $uni-color-primary;
-			.uni-searchbar__box{
-				background-color: #f5f5f5;
+		// .uni-searchbar{
+		// }
+		.condition{
+			width: 100%;
+			height: 120rpx;
+			.uni-searchbar{
+				width:calc(100% - 140rpx);
 			}
-			.uni-searchbar__cancel{
-				color: #fff;
+			.iconfont{
+				line-height: 110rpx;
+				margin-right: 20rpx;
+				padding:20rpx;
+				background-color:$uni-color-primary;
+				color:#fff;
+				font-size: 30rpx;
+				border-radius: 50%;
 			}
+		}
+		.timeMod{
+			padding:0 20rpx;
 		}
 		.tab{
 			// width: 100%;
@@ -192,6 +269,12 @@
 			height: calc(100% - 200rpx);
 			overflow-x: hidden;
 			overflow-y: auto;
+			.loading{
+				text-align: center;
+				padding:30rpx 0;
+				// height: 80rpx;
+				color:#999;
+			}
 			.orderItem{
 				margin: 20rpx;
 				width: calc(100% - 80rpx);
@@ -203,51 +286,104 @@
 					width: 100%;
 					height: 40rpx;
 					line-height: 40rpx;
-				}
-				.materials{
-					margin-top: 20rpx;
-					width: 100%;
-					min-height: 150rpx;
-					view{
-						display: inline-block;
-					}
-					image{
-						margin: 0 10rpx;
-						width: 150rpx;
-						height: 150rpx;
-						border-radius: 20rpx;
+					.right{
+						text{
+							color:#999;
+							margin-left: 10rpx;
+						}
 					}
 				}
-				.detail{
-					width: 100%;
-					height: 50rpx;
-					line-height: 50rpx;
-					font-size: 26rpx;
-					margin-top: 10rpx;
-					text-align: right;
-					.name{
-						// font-weight: bold;
-						margin-right: 10rpx;
+				.materialList{
+					margin: 20rpx 0;
+					overflow: hidden;
+					.materialItem{
+						margin: 20rpx 0;
+						// width: calc(100% - 80rpx);
+						display: flex;
+						align-items:center;
+						image{
+							border-radius: 20rpx;
+							margin-right:20rpx;
+							width: 100rpx;
+							height: 100rpx;
+						}
+						.detail{
+							width: calc(100% - 150rpx);
+							height: 100rpx;
+							line-height: 50rpx;
+							font-size: 26rpx;
+							.name{
+								font-weight: bold;
+							}
+							.price{
+								width: 100%;
+								.total{
+									color:#005bac;
+									font-size: 30rpx;
+									// .iconfont{
+									// 	font-size:18rpx
+									// }
+								}
+								.numHandle{
+									display: flex;
+									float: right;
+									// width: 200rpx;
+									.iconfont{
+										padding:0 10rpx;
+										color:#999;
+									}
+								}
+							}
+						}
 					}
-					.price{
+					.more{
+						text-align: right;
+						color:#999;
+						line-height: 40rpx;
 						.iconfont{
-							font-size:18rpx
-						}	
+							color:#fff;
+							background-color: #999;
+							border-radius: 50%;
+							font-size: 20rpx;
+							padding:2rpx;
+						}
 					}
 				}
-				.numHandle{
-					margin-top: 10rpx;
+
+				.msg{
 					text-align: right;
-					width: 100%;
-					height: 60rpx;
-					.uni-input{
-						padding:5rpx;
-						width:80rpx;
-						height: 40rpx;
-						border-left: solid 1px #ddd;
-						border-right: solid 1px #ddd;
-						text-align: center;
-					}
+					.detail{
+							width: 100%;
+							height: 50rpx;
+							line-height: 50rpx;
+							font-size: 26rpx;
+							margin-top: 10rpx;
+							text{
+								margin-left:10rpx;
+								color:#666;
+							}
+							.iconfont{
+								font-size:12rpx
+							}
+							.price{
+								color:#000;
+							}
+						}
+						.numHandle{
+							margin-top: 10rpx;
+							text-align: right;
+							width: 100%;
+							height: 60rpx;
+							.uni-input{
+								padding:5rpx;
+								width:80rpx;
+								height: 40rpx;
+								border-left: solid 1px #ddd;
+								border-right: solid 1px #ddd;
+								text-align: center;
+							}
+						}
+					
 				}
 			}
 		}

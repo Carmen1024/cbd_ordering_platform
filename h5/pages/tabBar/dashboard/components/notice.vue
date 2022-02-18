@@ -4,7 +4,7 @@
 			<image class="logo" src="/static/logo.jpg"></image>
 			<text>茶百道成都双楠店</text>
 		</view>
-		<view class="main">
+		<view class="main" @click="toNoticePage">
 			<text class="left">
 				<span class="icon iconfont icon-tongzhi"></span> 草莓预售通知
 			</text>
@@ -19,9 +19,13 @@
 	import { defineComponent } from "vue"
 	export default defineComponent({
 		setup() {
-			
+			const toNoticePage=(item)=>{
+				uni.navigateTo({
+				    url: '/pages/notice/notice'
+				})
+			}
 			return {
-				
+				toNoticePage
 			};
 		}
 	})
@@ -36,7 +40,7 @@
 			// background: #fff;
 			// border-radius: 20rpx 20rpx 0 0;
 			display: flex;
-			font-size: 30rpx;
+			font-size: 38rpx;
 			font-weight: bold;
 			.logo{
 				width: 60rpx;

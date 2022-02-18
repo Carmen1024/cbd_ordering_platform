@@ -1,5 +1,5 @@
 {
-    "name" : "小茶订货",
+    "name" : "茶茶订货",
     "appid" : "__UNI__CA21461",
     "description" : "茶百道订货平台",
     "versionName" : "1.0.0",
@@ -117,10 +117,10 @@
         "usingComponents" : true
     },
     "h5" : {
-        "template" : "template.h5.html",
+        "template" : "",
         "router" : {
             "mode" : "history",
-            "base" : "/order/"
+            "base" : "/store/"
         },
         "sdkConfigs" : {
             "maps" : {
@@ -134,7 +134,8 @@
         },
         "devServer" : {
             "https" : true
-        }
+        },
+        "title" : "茶茶订货"
     },
     "vueVersion" : "3"
 }

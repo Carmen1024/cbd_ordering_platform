@@ -5,7 +5,7 @@ export function classifyQuery(data: object) {
   return request({
     url: '/classify/queryClassifyList',
     method: 'post',
-	domin : "http://192.168.99.174:8001",
+	// domin : "http://192.168.99.5:8001",
     data
   })
 }
@@ -18,6 +18,14 @@ export function materialQuery(data: object) {
   })
 }
 
+//物料关键字搜索materials/queryList
+export function materialQuerySearch(data: object) {
+  return request({
+    url: '/materials/queryList',
+    method: 'post',
+    data
+  })
+}
 //购物车数量价格统计						
 ///shoppingCart/cartCountAndPrice
 export function cartCountAndPrice(data: object) {
@@ -54,6 +62,18 @@ export function cartList(data: object) {
 export function cartMaterialsUpdate(data: object) {
   return request({
     url: '/shoppingCart/cartMaterialsUpdate',
+    method: 'post',
+    data
+  })
+}
+
+//删除购物车物料
+//_id	关联物料购物车主键id
+//ids	关联物料购物车主键ids
+
+export function cartDel(data: object) {
+  return request({
+    url: '/shoppingCart/cartDel',
     method: 'post',
     data
   })

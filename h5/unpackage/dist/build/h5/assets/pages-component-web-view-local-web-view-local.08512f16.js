@@ -1,1 +1,0 @@
-import{_ as s,au as e,o as a,d as t,w as n,e as o,ax as l,k as r}from"./vendor.762bb174.js";var d=s({methods:{getMessage(s){e({content:JSON.stringify(s.detail),showCancel:!1})}}},[["render",function(s,e,d,g,u,c){const i=l,f=r;return a(),t(f,null,{default:n((()=>[o(i,{src:"/hybrid/html/local.html",onMessage:c.getMessage},null,8,["onMessage"])])),_:1})}]]);export{d as default};

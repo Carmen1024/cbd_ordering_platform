@@ -1,6 +1,6 @@
 <template>
 	<view class="card-container">
-		<view v-for="(item,index) in listData" class="card-container-item">
+		<view v-for="(item,index) in listData" class="card-container-item" @click="toPage(item)">
 			<view class="type">
 				<span :class="`icon iconfont icon-${item.value}`"></span>
 			</view>
@@ -17,18 +17,28 @@
 		setup() {
 			
 			const listData = [
-				{value:"expense",label:"费用单",desc:"描述文字"},
-				{value:"expenseType",label:"待付款",desc:"描述文字"},
-				{value:"acceptance",label:"验收",desc:"描述文字"},
-				{value:"refundBill",label:"退货",desc:"描述文字"},
-				{value:"scrap",label:"报废",desc:"描述文字"},
-				{value:"orderFile",label:"推荐订货",desc:"描述文字"},
-				{value:"inventory",label:"库存盘点",desc:"描述文字"},
-				{value:"report",label:"统计报表",desc:"描述文字"},
-				{value:"chargeManagement",label:"交易查询",desc:"描述文字"}
+				{value:"expense",label:"费用单",navigate:""},
+				// {value:"scrap",label:"报废",url:""},
+				// {value:"orderFile",label:"推荐订货",url:""},
+				// {value:"inventory",label:"库存盘点",url:""},
+				// {value:"report",label:"统计报表",url:""},
+				{value:"chargeManagement",label:"账单",url:""},
+				{value:"inventory",label:"资产",url:""},
+				{value:"expenseType",label:"待付款",switch:"/pages/tabBar/order/order?tabIndex=2"},
+				{value:"acceptance",label:"待验收",switch:"/pages/tabBar/order/order?tabIndex=4"},
+				{value:"refundBill",label:"退货",navigate:"/pages/tabBar/order/returnList"},
 			]
+			const toPage=(item)=>{
+				item.navigate && uni.navigateTo({
+				    url: item.navigate,
+				})
+				item.switch && uni.reLaunch({
+				    url: item.switch
+				});
+			}
 			return {
-				listData
+				listData,
+				toPage
 			};
 		}
 	})
@@ -56,7 +66,7 @@
 				margin-bottom: 10rpx;
 				height: 80rpx;
 				line-height: 80rpx;
-				overflow: hidden;
+				// overflow: hidden;
 				.iconfont{
 					font-size: 50rpx;
 					color:#fff;

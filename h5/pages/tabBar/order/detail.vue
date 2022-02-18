@@ -1,10 +1,11 @@
 <template>
 	<view class="order-container">
 		<view class="peiSong">
-			<text>订单未支付，无物流信息</text>
+			<text class="price" v-if="orderDetailData.o_s_status==1">订单未支付，无物流信息</text>
+			<text class="price" v-else>暂无物流信息</text>
 		</view>
 		<view class="materialList">
-			<view class="materialItem" v-for="(item,index) in orderDetailData.materials">
+			<view class="materialItem" v-for="(item,index) in orderDetailData.sub_order_materials">
 				<image :src="item.o_m_pic || '/static/logo.jpg'"></image>
 				<view class="detail">
 					<view class="name">{{item.o_m_name || '物料名称'}}</view>
@@ -21,78 +22,72 @@
 				</view>
 			</view>
 		</view>
-
 		<view class="other">
-			<view class="title">订单信息</view>
+			<view class="title">付款信息</view>
 			<view class="other-item">
-				<view>
-					<text class="left">订单号:</text>
-					<text class="right">{{o_id}}</text>
-				</view>
-			</view>
-			<view class="other-item">
-				<text class="left">订单状态:</text>
-				<text class="right">未支付</text>
-			</view>
-			<view class="other-item">
-				<text class="left">优惠券</text>
+				<text class="left">商品总价</text>
 				<view class="right" >
-					<span class="icon iconfont icon-jine"></span>1000<span class="icon iconfont icon-right"></span>
-				</view>
-			</view>
-			<view class="other-item">
-				<text class="left">账户余额</text>
-				<view class="right" >
-					<span class="icon iconfont icon-jine"></span>1000<span class="icon iconfont icon-right"></span>
-				</view>
-			</view>
-			<view class="other-item">
-				<text class="left">商品总额</text>
-				<view class="right" >
-					<span class="icon iconfont icon-jine"></span>1000<span class="icon iconfont icon-right"></span>
+					<span class="icon iconfont icon-jine"></span>
+					{{orderDetailData.o_p_origin_money || 0}}
 				</view>
 			</view>
 			<view class="other-item">
 				<text class="left">运费</text>
 				<text class="right">
-					<span class="icon iconfont icon-jine"></span>{{orderDetailData.o_freight_money || 0}}
-					<span class="icon iconfont icon-right"></span>
+					<span class="icon iconfont icon-jine"></span>
+					{{orderDetailData.o_p_freight_money || 0}}
 				</text>
 			</view>
 			<view class="other-item">
-				<text class="left">商品优惠</text>
-				<text class="right">
+				<text class="left">合计优惠</text>
+				<text class="right color-primary">
+					<span class="icon iconfont icon-jian"></span>
 					<span class="icon iconfont icon-jine"></span>
-					{{orderDetailData.discount || 0}}
-					<span class="icon iconfont icon-right"></span>
+					{{Math.abs(orderDetailData.o_p_discount_money) || 0}}
 				</text>
 			</view>
-			
+			<view class="other-item">
+				<text class="left">实付款</text>
+				<view class="right color-primary fontBold" >
+					<span class="icon iconfont icon-jine"></span>
+					{{orderDetailData.o_p_real_pay_money || 0}}
+				</view>
+			</view>
+		</view>
+		<view class="other">
+			<view class="title">订单信息</view>
+			<view class="other-item">
+				<view>
+					<text class="left">订单号:</text>
+					<view class="right">
+						<text>{{orderDetailData.o_p_code}}</text>
+						<text class="copyC" @click="copyC">复制</text>
+					</view>
+				</view>
+			</view>
+			<view class="other-item">
+				<text class="left">订单状态:</text>
+				<text class="right">{{orderDetailData.o_s_status_desc}}</text>
+			</view>
 		</view>
 		<view class="other">
 			<view class="title">配送信息</view>
 			<view class="other-item">
 				<view>
 					<text class="left">配送方式:</text>
-					<text class="right">{{orderDetailData.o_recipient_contact}}</text>
-				</view>
-			</view>
-			<view class="other-item">
-				<view>
-					<text class="left">运费:</text>
-					<text class="right">0</text>
+					<text class="right">物流</text>
 				</view>
 			</view>
 			<view class="other-item">
 				<view>
 					<text class="left">送货时间:</text>
-					<text class="right">{{orderDetailData.o_recipient}}</text>
+					<text class="right">预计2022月02月19日</text>
 				</view>
 			</view>
 			<view class="other-item">
 				<view>
 					<text class="left">物流状态:</text>
-					<text class="right">{{orderDetailData.o_recipient}}</text>
+					<text class="right">未发货</text>
 				</view>
 			</view>
 		</view>
@@ -101,25 +96,28 @@
 			<view class="other-item">
 				<view>
 					<text class="left">收货人:</text>
-					<text class="right">{{orderDetailData.o_recipient_contact}}</text>
+					<text class="right">{{orderDetailData.o_s_recipient}}</text>
+				</view>
+			</view>
+			<view class="other-item">
+				<view>
+					<text class="left">联系方式:</text>
+					<text class="right">{{orderDetailData.o_s_recipient_contact}}</text>
 				</view>
 			</view>
 			<view class="other-item">
 				<view>
 					<text class="left">地址:</text>
-					<text class="right">成都市高新区名都路166号</text>
-				</view>
-			</view>
-			<view class="other-item">
-				<view>
-					<text class="left">手机号:</text>
-					<text class="right">{{orderDetailData.o_recipient}}</text>
+					<text class="right">{{orderDetailData.o_s_recipient_addr}}</text>
 				</view>
 			</view>
 		</view>
 		<view class="account">
-			<view class="right">
+			<view class="right" v-if="orderDetailData.o_s_status==1">
+				<button class="uni-button" size="mini">取消订单</button>
 				<button class="uni-button" type="primary" size="mini">去付款</button>
+			</view>
+			<view class="right" v-else>
 				<button class="uni-button" size="mini">再来一单</button>
 			</view>
 		</view>
@@ -128,45 +126,40 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { orderDetail } from '@/api/order'
+	import { subOrderDetail } from '@/api/order'
 	import { statusData } from './enum'
 	export default defineComponent({
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
-			console.log(option.o_id); //打印出上个页面传递的参数。
+			console.log(option._id); //打印出上个页面传递的参数。
+			// this.o_id = option.o_id;
+			this.getOrderDetail(option._id);
 		},
 		setup() {
-			const o_id = "fe19ecc0ddcd48dd94c25ad93e35b540"
+			// const o_id = ""
 			const orderDetailData = ref({})
-			const getOrderDetail=()=>{
-				orderDetail({o_id}).then(res=>{
+			const getOrderDetail=(_id)=>{
+				subOrderDetail({_id}).then(res=>{
+					const select = statusData.find(select => select.value === res.data.o_s_status)
+					res.data.o_s_status_desc = select ?  select.label : res.data.o_s_status
 					orderDetailData.value = res.data
 				})
 			}
-			getOrderDetail();
-			
+			const copyC = ()=>{
+				uni.setClipboardData({
+				    data: orderDetailData.value.o_id,
+				    success: function () {
+				        // console.log('已复制订单号');
+				    }
+				});
+			}
 			return {
 				getOrderDetail,
 				orderDetailData,
-				o_id
+				copyC
 			}
 		},
 		methods:{
-			getOrderInf(){
-				const cartList = this.cartMaterialList.map(item=>{
-					 return {"m_id": item.m_id,"count": item.m_c_count,"unit": "1"}
-				})
-				console.log(cartList);
-				const params = {
-					"a_id": "1", //地址ID
-					"s_id": "10",//门店ID
-					"r_g_id": "1", //区域ID
-					"materials":cartList
-				}
-				orderConfirm(params).then(res=>{
-					this.orderDetailData = res.data
-				})
-				uni.hideLoading();
-			}
+			
 		}
 	})
 </script>
@@ -250,6 +243,7 @@
 			border-radius: 10rpx;
 			box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
 			display: flex;
+			align-items: center;
 			.icon-dituguanli{
 				margin-right: 10rpx;
 				padding:10rpx;
@@ -284,7 +278,7 @@
 			.right{
 				.uni-button{
 					margin-right: 20rpx;
-					border-radius: 20rpx;
+					// border-radius: 20rpx;
 					height: 60rpx;
 					line-height: 60rpx;
 					font-size: 30rpx;
@@ -320,6 +314,13 @@
 				}
 				&:last-child{
 					border: none;
+				}
+				.copyC{
+					margin-left: 10rpx;
+					padding-left: 10rpx;
+					border-left: solid 1px #666;
+					color: #666;
+					font-size: 20rpx;
 				}
 			}
 		}

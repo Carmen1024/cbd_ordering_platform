@@ -1,7 +1,8 @@
 <template>
 	<view class="reaction-container" v-show="reactionMaterials.show">
 		<view class="title">
-			<text>关联物料（{{reactionMaterials.materials.length}}）</text>
+			<text>关联物料({{reactionMaterials.materials.length}})</text>
+			<span class="right icon iconfont icon-close" @click="reactionMaterials.show=false"></span>
 		</view>
 		<view class="commodityList">
 			<view class="commodityItem" v-for="(item,index) in reactionMaterials.materials">
@@ -48,10 +49,7 @@
 			},
 		},
 		setup(props) {
-			// const cartInsert = ()=>{
 
-			
-			// },
 			return {
 				
 			}
@@ -73,10 +71,12 @@
 <style lang="scss" scoped>
 	.reaction-container{
 		position: fixed;
-		bottom: 200rpx;
+		bottom: 195rpx;
 		left: 0;
 		width: 100%;
+		// height: 400rpx;
 		background-color: #f5f5f5;
+		border-bottom: solid 1px #ddd;
 		.title{
 			padding:10rpx 20rpx;
 			height: 40rpx;
@@ -129,6 +129,7 @@
 						width: 100%;
 						height: 60rpx;
 						line-height: 60rpx;
+						overflow: hidden;
 						.total{
 							width: 50%;
 						}

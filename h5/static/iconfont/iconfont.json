@@ -6,6 +6,69 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2892818",
+      "name": "删除",
+      "font_class": "shanchu1",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "11372693",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e8b6",
+      "unicode_decimal": 59574
+    },
+    {
+      "icon_id": "824975",
+      "name": "编辑",
+      "font_class": "bianji",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "1002197",
+      "name": "日历",
+      "font_class": "rili",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "2305657",
+      "name": "编辑",
+      "font_class": "bianji1",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "538878",
+      "name": "搜索",
+      "font_class": "sousuo",
+      "unicode": "e61c",
+      "unicode_decimal": 58908
+    },
+    {
+      "icon_id": "2076426",
+      "name": "搜索小",
+      "font_class": "sousuoxiao",
+      "unicode": "e8d6",
+      "unicode_decimal": 59606
+    },
+    {
+      "icon_id": "2939196",
+      "name": "关闭26",
+      "font_class": "bigclose",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "4510299",
+      "name": "语音关闭",
+      "font_class": "close",
+      "unicode": "e903",
+      "unicode_decimal": 59651
+    },
+    {
       "icon_id": "765334",
       "name": "商城",
       "font_class": "shouye",

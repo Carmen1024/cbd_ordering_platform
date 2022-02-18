@@ -1,18 +1,9 @@
 import { request } from '@/utils/request'
 // 获取数据api
 export function orderConfirm(data: object) {
-	// 8001
   return request({
     url: '/proced/order/confirm',
-    method: 'post',
-    data
-  })
-}
-
-export function orderDetail(data: object) {
-	// 8001
-  return request({
-    url: '/proced/order/detail',
+	domin : "http://192.168.99.174:8009",
     method: 'post',
     data
   })
@@ -20,9 +11,9 @@ export function orderDetail(data: object) {
 
 //下单
 export function createOrder(data: object) {
-	// 8001
   return request({
     url: '/proced/order/create',
+	domin : "http://192.168.99.174:8009",
     method: 'post',
     data
   })
@@ -30,11 +21,28 @@ export function createOrder(data: object) {
 
 //
 export function orderList(data: object) {
-	// 8001
   return request({
     url: '/proced/order/subOrderList',
+	// domin : "http://192.168.99.174:8009",
     method: 'post',
     data
   })
 }
 
+//获取父订单 暂时用不上
+export function orderDetail(data: object) {
+  return request({
+    url: '/proced/order/detail',
+    method: 'post',
+    data
+  })
+}
+//子订单详情
+export function subOrderDetail(data: object) {
+  return request({
+    url: '/proced/order/subOrderDetail',
+	// domin : "http://192.168.99.174:8009",
+    method: 'post',
+    data
+  })
+}

@@ -1,11 +1,14 @@
-const host = "http://192.168.99.174:8009"
-// const host1 = "http://192.168.99.5:8001"
-//http://192.168.99.5:8009
+import { getStorageSync } from './token'
+
+const host = "http://113.125.84.255:8009"
+//192.168.99.5 丁武军
+//192.168.99.174 何龙getStorageSync
+//113.125.84.255 服务器
 
 export const request = ({url,method,data,domin=host})=>{
 	const params={
 		data:data,
-		token:'admin'
+		token:getStorageSync('token') || 'admin'
 	}
 	return new Promise(function(resolve, reject){
 		uni.request({

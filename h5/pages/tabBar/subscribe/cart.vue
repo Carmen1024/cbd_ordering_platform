@@ -1,7 +1,7 @@
 <template>
 	<view class="cart-container">
 		<view class="account">
-			<view class="left">
+			<view class="left" @click="toCart">
 				<span class="icon iconfont icon-goumai"></span>
 				<text v-if="countAndPrice.total && countAndPrice.total>0">
 					{{countAndPrice.total}}
@@ -12,7 +12,7 @@
 					<text>总计:</text>
 					<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{countAndPrice.price}}</text>
 				</view>
-				<button type="primary" size="mini" @click="toCart">去购物车</button>
+				<button type="primary" size="mini" @click="toCart">购物车</button>
 			</view>
 		</view>
 	</view>
@@ -35,8 +35,6 @@
 		},
 		setup(props) {
 			
-
-			
 			return {
 				
 			}
@@ -52,10 +50,11 @@
 </script>
 <style lang="scss" scoped>
 	.cart-container{
-		position: fixed;
-		bottom: 100rpx;
+		position: absolute;
+		bottom: 0;
 		left: 0;
 		width: 100%;
+		height: 100rpx;
 		// background-color: #f5f5f5;
 		.account{
 			width: 100%;
@@ -79,7 +78,7 @@
 					width: 40rpx;
 					height: 40rpx;
 					line-height: 40rpx;
-					font-size: 16rpx;
+					font-size: 17rpx;
 					top: 0rpx;
 					right: -20rpx;
 					border-radius: 50%;
@@ -94,7 +93,7 @@
 				.priceTotal{
 					font-weight: bold;
 				}
-				.mini-btn{
+				button{
 					margin: 20rpx 20rpx;
 					border-radius: 20rpx;
 					height: 60rpx;

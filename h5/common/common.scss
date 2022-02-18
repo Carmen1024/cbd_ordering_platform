@@ -76,6 +76,45 @@ page {
 	font-size:26rpx;
 }
 
+.fontBold{
+	font-weight: bold;
+}
 .color-primary{
-	color:$uni-color-primary
+	color:$uni-color-primary !important;
+}
+.uni-searchbar{
+	.uni-searchbar__box{
+		border:solid 1px $uni-color-primary;
+	}
+	.uni-searchbar__cancel{
+		color: $uni-color-primary;
+	}
+}
+.noData{
+	margin-top: 50%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	text-align: center;
+	view{
+		width: 100%;
+		// height: 100rpx;
+		color:#666;
+
+	}
+	:first-child{
+		transform:rotate(330deg);
+		-ms-transform:rotate(330deg); /* IE 9 */
+		-webkit-transform:rotate(330deg); /* Safari and Chrome */
+	}
+	.iconfont{
+		background-color: $uni-color-primary;
+		border-radius: 50%;
+		padding:30rpx;
+		line-height: 200rpx;
+		height: 200rpx;
+		text-align: center;
+		font-size: 80rpx;
+		color:#fff;
+	}
 }
