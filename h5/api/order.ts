@@ -2,8 +2,8 @@ import { request } from '@/utils/request'
 // 获取数据api
 export function orderConfirm(data: object) {
   return request({
-    url: '/proced/order/confirm',
-	domin : "http://192.168.99.174:8009",
+    url: '/g/proced/order/confirm',
+	// domin : "http://192.168.99.174:8009",
     method: 'post',
     data
   })
@@ -12,8 +12,8 @@ export function orderConfirm(data: object) {
 //下单
 export function createOrder(data: object) {
   return request({
-    url: '/proced/order/create',
-	domin : "http://192.168.99.174:8009",
+    url: '/g/proced/order/create',
+	// domin : "http://192.168.99.174:8009",
     method: 'post',
     data
   })
@@ -22,7 +22,7 @@ export function createOrder(data: object) {
 //
 export function orderList(data: object) {
   return request({
-    url: '/proced/order/subOrderList',
+    url: '/g/proced/order/subOrderList',
 	// domin : "http://192.168.99.174:8009",
     method: 'post',
     data
@@ -32,7 +32,7 @@ export function orderList(data: object) {
 //获取父订单 暂时用不上
 export function orderDetail(data: object) {
   return request({
-    url: '/proced/order/detail',
+    url: '/g/proced/order/detail',
     method: 'post',
     data
   })
@@ -40,7 +40,7 @@ export function orderDetail(data: object) {
 //子订单详情
 export function subOrderDetail(data: object) {
   return request({
-    url: '/proced/order/subOrderDetail',
+    url: '/g/proced/order/subOrderDetail',
 	// domin : "http://192.168.99.174:8009",
     method: 'post',
     data

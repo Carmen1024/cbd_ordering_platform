@@ -13,9 +13,9 @@
 export const submitData=[
 	{value:1,label:"s_a_name",tip:"请输入收件人"},
 	{value:2,label:"s_a_phone",tip:"请输入手机号"},
-	{value:3,label:"s_a_province",tip:"请输入省"},
-	{value:4,label:"s_a_city",tip:"请输入市"},
-	{value:5,label:"s_a_area",tip:"请输入区"},
+	{value:3,label:"s_a_province",tip:"请选择省"},
+	{value:4,label:"s_a_city",tip:"请选择市"},
+	{value:5,label:"s_a_area",tip:"请选择区"},
 	{value:6,label:"s_a_detail",tip:"请输入详细地址"},
 	// {value:7,label:"s_a_postcode",tip:"请输入邮编"}
 ]

@@ -3,7 +3,7 @@ import { request } from '@/utils/request'
 export function classifyQuery(data: object) {
 	// 8001
   return request({
-    url: '/classify/queryClassifyList',
+    url: '/g/classify/queryClassifyList',
     method: 'post',
 	// domin : "http://192.168.99.5:8001",
     data
@@ -12,7 +12,7 @@ export function classifyQuery(data: object) {
 
 export function materialQuery(data: object) {
   return request({
-    url: '/materials/queryListByClassify',
+    url: '/g/materials/queryListByClassify',
     method: 'post',
     data
   })
@@ -21,7 +21,7 @@ export function materialQuery(data: object) {
 //物料关键字搜索materials/queryList
 export function materialQuerySearch(data: object) {
   return request({
-    url: '/materials/queryList',
+    url: '/g/materials/queryList',
     method: 'post',
     data
   })
@@ -30,7 +30,7 @@ export function materialQuerySearch(data: object) {
 ///shoppingCart/cartCountAndPrice
 export function cartCountAndPrice(data: object) {
   return request({
-    url: '/shoppingCart/cartCountAndPrice',
+    url: '/g/shoppingCart/cartCountAndPrice',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function cartCountAndPrice(data: object) {
 //url：/shoppingCart/cartInsert
 export function cartInsert(data: object) {
   return request({
-    url: '/shoppingCart/cartInsert',
+    url: '/g/shoppingCart/cartInsert',
     method: 'post',
     data
   })
@@ -51,7 +51,7 @@ export function cartInsert(data: object) {
 // url：/shoppingCart/cartList						
 export function cartList(data: object) {
   return request({
-    url: '/shoppingCart/cartList',
+    url: '/g/shoppingCart/cartList',
     method: 'post',
     data
   })
@@ -61,7 +61,7 @@ export function cartList(data: object) {
 // url：/shoppingCart/cartMaterialsUpdate						
 export function cartMaterialsUpdate(data: object) {
   return request({
-    url: '/shoppingCart/cartMaterialsUpdate',
+    url: '/g/shoppingCart/cartMaterialsUpdate',
     method: 'post',
     data
   })
@@ -73,7 +73,15 @@ export function cartMaterialsUpdate(data: object) {
 
 export function cartDel(data: object) {
   return request({
-    url: '/shoppingCart/cartDel',
+    url: '/g/shoppingCart/cartDel',
+    method: 'post',
+    data
+  })
+}
+
+export function cartDelByM(data: object) {
+  return request({
+    url: '/g/shoppingCart/cartDel/sId/mId',
     method: 'post',
     data
   })

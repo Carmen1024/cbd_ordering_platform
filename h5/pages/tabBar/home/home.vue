@@ -21,17 +21,13 @@
 		</view>
 		<view class="account">
 			<view class="account-item">
-				<text class="left">我的收货地址</text>
-				<text class="right">
-					<navigator :url="'/pages/address/address'">管理我的地址<span class="icon iconfont icon-right"></span></navigator>
-				</text>
+				<navigator :url="'/pages/address/address'">
+					<text class="left">我的收货地址</text>
+					<text class="right">
+						管理我的地址<span class="icon iconfont icon-right"></span>
+					</text>
+				</navigator>
 			</view>
-<!-- 			<view class="account-item">
-				<text class="left">发票抬头管理</text>
-				<text class="right">管理增票资质<span class="icon iconfont icon-right"></span></text>
-			</view> -->
-<!-- 		</view>
-		<view class="account"> -->
 			<view class="account-item">
 				<text class="left">账户余额</text>
 				<text class="right">{{mine.store_remain}}元<span class="icon iconfont icon-right"></span></text>

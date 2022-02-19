@@ -4,6 +4,7 @@
 			<uni-search-bar
 				class="left"
 				@confirm="search"
+				@cancel="cancel"
 				radius="20"
 				maxlength="30"
 				bgColor="#fff"
@@ -216,6 +217,12 @@
 				this.orderData = []
 				this.getOrderData()
 			},
+			cancel(){
+				this.condition.o_p_code=""
+				this.page.pageNum = 1
+				this.orderData = []
+				this.getOrderData()
+			},
 			openPicker(){
 				this.$refs.datetimePicker.show()
 			}
@@ -227,7 +234,7 @@
 	.order-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 120rpx);
 		overflow: hidden;
 		background-color: #f5f5f5;
 		// .uni-searchbar{
@@ -235,6 +242,7 @@
 		.condition{
 			width: 100%;
 			height: 120rpx;
+			background-color: #fff;
 			.uni-searchbar{
 				width:calc(100% - 140rpx);
 			}
@@ -249,10 +257,12 @@
 			}
 		}
 		.timeMod{
-			padding:0 20rpx;
+			background-color: #fff;
+			padding:20rpx;
 		}
 		.tab{
 			// width: 100%;
+			background-color: #fff;
 			padding:0 20rpx;
 			// height: 50rpx;
 			display: flex;
@@ -408,6 +418,13 @@
 					line-height: 60rpx;
 					font-size: 30rpx;
 				}
+			}
+		}
+		.noData{
+			:first-child{
+				transform:rotate(330deg);
+				-ms-transform:rotate(330deg); /* IE 9 */
+				-webkit-transform:rotate(330deg); /* Safari and Chrome */
 			}
 		}
 	}

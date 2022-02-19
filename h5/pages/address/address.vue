@@ -1,12 +1,12 @@
 <template>
 	<view class="address-container">
-		<view  class="addressList">
+		<view  class="addressList" v-if="addressList.length>0">
 			<view class="addressItem" v-for="(item,index) in addressList">
 				<view class="title">
 					<view class="left">
 						<text class="name">{{item.s_a_name}}</text>
 						<text class="phone">{{item.s_a_phone}}</text>
-						<text class="default" v-show="item.s_a_default">默认</text>
+						<!-- <text class="default" v-show="item.s_a_default">默认</text> -->
 					</view>
 					<view class="right" v-if="item.s_a_audit_status==1">
 						 <text class="default">审核中</text>
@@ -21,9 +21,13 @@
 					</view>
 				</view>
 				<view class="content">
-					{{item.s_a_province}} {{item.s_a_area}} {{item.s_a_city}} {{item.s_a_detail}}
+					{{item.s_a_province}} {{item.s_a_city}} {{item.s_a_area}} {{item.s_a_detail}}
 				</view>
 			</view>
+		</view>
+		<view class="noData" v-else>
+			<view><span class="icon iconfont icon-dituguanli"></span></view>
+			<view><text>您还没有收货地址</text></view>
 		</view>
 <!-- 		<view class="addressFoot">
 			<button class="submit" type="primary" @click="add">新增收货地址</button>

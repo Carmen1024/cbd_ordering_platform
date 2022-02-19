@@ -2,6 +2,7 @@
 	<view class="shopping-container-search">
 		<uni-search-bar 
 			@confirm="search"
+			@cancel="cancel"
 			radius="20"
 			maxlength="30"
 			bgColor="#fff"
@@ -136,6 +137,10 @@
 				console.log("search")
 				this.resetSearch(e.value)
 				this.getMaterialQuery()
+			},
+			cancel:function(e) {
+				this.resetSearch("")
+				// this.getMaterialQuery()
 			},
 		}
 		

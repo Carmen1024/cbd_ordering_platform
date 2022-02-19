@@ -140,10 +140,15 @@
 						(item.m_stock==0 || item.c_valid==0) ? stockZeroList.value.push(item) : cartMaterialList.value.push(item)
 					})
 					const clist = res.data.filter(item=>{
-						return item.m_stock > item.m_c_count
+						return item.m_stock >= item.m_c_count
 					})
 					console.log(clist.length);
 					cbCheckDisabled.value = clist.length === res.data.length ? false : true
+					
+					// 如果正在管理则退出
+					if(operateType.value==2 && res.data.length==0){
+						operateType.value = 1
+					}
 					//cbCheckDisabled
 					console.log(stockZeroList.value,cartMaterialList.value)
 				})
@@ -171,12 +176,18 @@
 				const all = items.length
 				const checkedlength = items.filter(item=>item.checked).length
 				cbChecked.value =  ((all == checkedlength) && (checkedlength > 0))? true:false
+				
+				const clist = items.filter(item=>{
+					return item.m_stock >= item.m_c_count
+				})
+				cbCheckDisabled.value = clist.length === items.length ? false : true
 			}
-			
+			//重新设置购物车
 			const resetShoppingCart =()=>{
 				getCartList()
 				butFreshList();
 			}
+			//除了刷新列表，其他都要做
 			const butFreshList = ()=>{
 				getCartCountAndPrice()
 				setChosenCountPrice()
@@ -231,10 +242,27 @@
 			},
 			dataChange(item){
 				
-				let ret=/^([0-9]*)$/;
-				console.log(isNaN(parseInt(item.m_c_count)),item);
-				const m_c_count = isNaN(parseInt(item.m_c_count)) ? item.old_count :parseInt(item.m_c_count)
+				let ret=/^([1-9]+[0-9]*)$/;
+				let errorTip=""
+				if(isNaN(parseInt(item.m_c_count))){
+					errorTip="请填入数字"
+				}else if(!item.m_c_count.match(ret)){
+					errorTip="订购数量必须大于等于1"
+				}else if(parseInt(item.m_c_count)>item.m_stock){
+					errorTip="库存不足"
+				}
+				if(errorTip){
+					item.m_c_count = item.old_count
+					uni.showToast({
+					    title: errorTip,
+					    duration: 2000,
+						icon:"none"
+					});
+					return
+				}
+				const m_c_count = parseInt(item.m_c_count)
 				item.m_c_count = m_c_count
+				
 				const params={
 					"_id": item._id,
 					"s_id": "10",
@@ -259,6 +287,7 @@
 				    "s_id":"10"
 				}
 				this.toCartInsert(params)
+				
 			},
 			jian(item){
 				console.log("减少",item)
@@ -281,6 +310,9 @@
 			},
 			jia(item){
 				item.m_c_count++
+				if(item.checked && item.m_c_count>item.m_stock){
+					item.checked = false
+				}
 				const params = {
 					"m_id":item.m_id,
 				    "m_c_count":1,

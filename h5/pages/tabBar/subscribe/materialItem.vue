@@ -37,7 +37,7 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { cartCountAndPrice,cartInsert,cartList,cartDel } from '@/api/subscribe'
+	import { cartCountAndPrice,cartInsert,cartList,cartDel,cartDelByM } from '@/api/subscribe'
 	export default defineComponent({
 		props:{
 			materialData : {
@@ -76,21 +76,21 @@
 				console.log("减少",item)
 				const _this = this;
 				if(item.num<=1){
-					uni.showToast({
-					    title: '暂时无法清空',
-					    duration: 2000,
-						icon:"none"
-					});
-					// uni.showModal({
-					// 	content: '是否确认删除该物料',
-					// 	showCancel: true,
-					// 	success: function (res) {
-					// 		if (res.confirm) {
-					// 			const ids = [item._id]
-					// 			_this.deleteByIds(ids)
-					// 		}
-					// 	}
-					// })
+					// uni.showToast({
+					//     title: '暂时无法清空',
+					//     duration: 2000,
+					// 	icon:"none"
+					// });
+					uni.showModal({
+						content: '是否确认删除该物料',
+						showCancel: true,
+						success: function (res) {
+							if (res.confirm) {
+								item.num--
+								_this.deleteByM(item)
+							}
+						}
+					})
 				}else{
 					item.num--
 					_this.reduce(item)
@@ -105,6 +105,16 @@
 				    "s_id":"10"
 				}
 				this.$emit("jiaReaction",params)
+			},
+			deleteByM(item){
+				const _this = this;
+				const params = {
+					"s_id":"10",
+					"m_id":item._id
+				}
+				cartDelByM(params).then(res=>{
+					_this.$emit("jianReaction")
+				})
 			},
 			// 最终删除购物车物料
 			deleteByIds(ids){

@@ -10,10 +10,14 @@
 		</view>
 		<view class="address-container-item">
 			<text>所在地区</text>
-			<input class="uni-input" placeholder="省" v-model="address.s_a_province" />
-			<input class="uni-input" placeholder="市" v-model="address.s_a_city" />
-			<input class="uni-input" placeholder="区/县" v-model="address.s_a_area" />
+			<view @click="areaOperate=true">
+				{{address.s_a_province}} {{address.s_a_city}} {{address.s_a_area}}
+			</view>
+			<!-- <input @click="areaOperate=true" class="uni-input" placeholder="省" v-model="" /> -->
+			<!-- <input @click="areaOperate=true" class="uni-input" placeholder="市" v-model="address.s_a_city" /> -->
+			<!-- <input @click="areaOperate=true" class="uni-input" placeholder="区/县" v-model="address.s_a_area" /> -->
 		</view>
+		<area-picker v-show="areaOperate" :address="address" @change="changeArea" @close="closeArea" />
 		<view class="address-container-item" style="height: 150rpx;">
 			<text>详细地址</text>
 			<textarea class="uni-textarea" maxlength="64" placeholder="详细地址" v-model="address.s_a_detail" />
@@ -22,10 +26,10 @@
 			<text>邮编</text>
 			<input class="uni-input" maxlength="12" type="number" v-model="address.s_a_postcode" placeholder="邮编" />
 		</view>
-		<view class="address-container-item">
+<!-- 		<view class="address-container-item">
 			<text>设为默认收货地址</text>
 			<switch :checked="address.s_a_default" style="transform: scale(0.7);" @change="switch1Change" />
-		</view>
+		</view> -->
 		<button class="submit" type="primary" @click="submit">确认</button>
 		<!-- <button class="delete" @click="deleteD">删除地址</button> -->
 	</view>
@@ -36,12 +40,17 @@
 	import { addressInsert,addressUpdate,addressDelete } from '@/api/home'
 	import { getStorageSync } from '@/utils/token'
 	import { submitData } from './enum'
+	import areaPicker from './area'
 	export default defineComponent({
 		onLoad:function(option){
 			this.setAddr(JSON.parse(getStorageSync("addressDetail")));
 		},
+		components:{
+			areaPicker
+		},
 		setup() {
 
+			const areaOperate = ref(false)
 			const address = ref({})
 			const layer=reactive({
 				title:"",
@@ -65,7 +74,7 @@
 						"s_a_province":"",
 						"s_a_city":"",
 						"s_a_area":"",
-						"s_a_default":false,
+						// "s_a_default":false,
 						"s_a_detail":"",
 						"s_a_postcode":""
 					}
@@ -76,7 +85,8 @@
 			return {
 				address,
 				setAddr,
-				layer
+				layer,
+				areaOperate
 			}
 		},
 		methods: {
@@ -146,6 +156,15 @@
 					uni.navigateBack()
 				})
 				
+			},
+			changeArea(data){
+				this.address.s_a_province = data.provinceData.text || ""
+				this.address.s_a_city = data.cityData.text || ""
+				this.address.s_a_area = data.areaData.text || ""
+				this.closeArea()
+			},
+			closeArea(){
+				this.areaOperate = false
 			}
 			
 		}
@@ -173,6 +192,14 @@
 				padding: 15rpx 25rpx;
 				line-height:50rpx;
 				font-size:28rpx;
+			}
+			view{
+				width: 100%;
+				margin-left: 20rpx;
+				padding: 15rpx 25rpx;
+				line-height:50rpx;
+				background-color: #efefef;
+				border-radius: 20rpx;
 			}
 		}
 		button{

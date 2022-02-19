@@ -1,6 +1,6 @@
 <template>
 	<view class="order-container">
-		<view class="order-address" @click="showAddress=true">
+		<view class="order-address" v-if="addrList.length>0">
 			<span class="icon iconfont icon-dituguanli"></span>	  
 			<view class="address-main" v-if="addr.s_a_name">
 				<view class="detail">
@@ -11,13 +11,18 @@
 				</view>
 			</view>	 
 			<view class="address-main" v-else>
-				<view class="detail" v-if="addrList.length>0">收货地址正在审核中</view>
-				<view class="detail" v-else>您还没有收货地址</view>
+				<!-- <view class="detail" v-if="addrList.length>0">收货地址正在审核中</view> -->
+				<view class="detail">您还没有有效的收货地址</view>
 				<view class="name">暂时无法下单</view>
 			</view>
-			<span class="icon iconfont icon-right"></span>
+			<!-- <span class="icon iconfont icon-right"></span> -->
 		</view>
-		<address-list v-if="showAddress" :addrList="addrList" @change="changeAddr" @close="closeAddr" />
+		<!-- <address-list v-if="showAddress" :addrList="addrList" @change="changeAddr" @close="closeAddr" /> -->
+		<view class="noData" v-if="noAddr">
+			<view><span class="icon iconfont icon-dituguanli"></span></view>
+			<view><text>您还没有收货地址</text></view>
+			<view><text>暂时无法下单</text></view>
+		</view>
 		<view v-show="ready">
 			<!-- 实际物料 -->
 			<!-- orderInformation.actual_buy_materials_msg -->
@@ -107,7 +112,7 @@
 			const addr=ref({})
 			const confirmFirst = ref(true)
 			const ready = ref(false)
-			
+			const noAddr = ref(false)
 			// "user_choice_cycle": false,
 			// "user_actual_choice_cycle": [], 
 			//关联物料
@@ -179,11 +184,11 @@
 					getCycle()
 				}
 				const params = {
-					"a_id": "1", //地址ID
+					// "a_id": "1", //地址ID
 					"s_id": "10",//门店ID
 					"r_g_id": "1", //区域ID
-					// "a_id": addr.value._id, //地址ID(string)
-					"a_id":"10",
+					"a_id": addr.value._id, //地址ID(string)
+					// "a_id":"10",
 					c_ids, //购物车ID集合(arr)
 					"materials":cartList.value,
 					...rela.value,
@@ -235,24 +240,17 @@
 					uni.hideToast();
 				})
 			}
-			// 没有默认地址，自己设置
-			const setAddr=()=>{
-				showAddress.value = true;
-			}
-			const noAddr=()=>{
-				uni.navigateTo({
-				    url: "/pages/address/address",
-				})
-			}
 			// 校验收货地址
 			const checkAddress = ()=>{
 				if(addrList.value.length==0){
-					noAddr();
+					noAddr.value = true
 					return;
 				}
 				//是否有默认地址
 				const defaultAddr = addrList.value.find(item=>item.s_a_default)
-				defaultAddr ? passAddr(defaultAddr) : setAddr()
+				//没有默认地址取第一个
+				const validAddr = defaultAddr || addrList.value[0]
+				passAddr(validAddr)
 				
 			}
 			const addrList = ref([])
@@ -277,7 +275,8 @@
 				addr,
 				addrList,
 				getAddressList,
-				ready
+				ready,
+				noAddr
 			}
 		},
 		methods:{
@@ -475,6 +474,5 @@
 				}
 			}
 		}
-
 	}
 </style>
