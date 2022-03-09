@@ -1,39 +1,55 @@
 <template>
-	<view class="user-container-item">
-		<text>手机号</text>
-		<input class="uni-input" v-model="verification.phone" placeholder="请输入手机号" />
+	<view class="user-container-main">
+		<image class="logo" src="/static/logo.jpg"></image>
+		<code-mode :user="user" />
+		<view style="text-align: right;">
+			<navigator class="" url="/pages/login/resetPassword">
+				<text>忘记密码</text>
+			</navigator>
+		</view>
+		<button class="submit" type="primary" @click="submit">确认</button>
 	</view>
-	<view class="user-container-item">
-		<text>验证码</text>
-		<input class="uni-input" v-model="verification.code" placeholder="请输入验证码" />
-		<button size="mini" class="submit" type="primary" @click="submit">发送验证码</button>
-	</view>
-<!-- 			.icon-eye
-	.icon-closeeye -->
-	<button class="submit" type="primary" @click="submit">确认</button>
-
 </template>
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	
+	import { setStorageSync } from '@/utils/token'
+	import codeMode from './code.vue'
+	import { getPhoneCode,resetPass } from '@/api/login'
 	export default defineComponent({
+		components:{
+			codeMode
+		},
 		setup() {
 
-			const verification = ref({
+			const sendDisable = ref(false)
+			const user = ref({
 				phone:"",
 				code:""
 			})
 			return {
-				verification,
+				user,
+				sendDisable
 			}
 		},
 		methods: {
 			submit(){
-				console.log(this.verification)
-				this.$emit("pass",1)
+				
+				const params = {
+					"eq":{
+						"user_phone":this.user.phone,
+						"phone_code":this.user.code
+					},
+				}
+				
+				setStorageSync('token','0f99a688f420243cda8d8166a4e69c4c')
+				uni.switchTab({
+				    url: '/pages/tabBar/dashboard/dashboard'
+				});
 			},
-			
+			sendCode(){
+				this.sendDisable = this.sendDisable ? false : true;
+			}
 			
 		}
 	})

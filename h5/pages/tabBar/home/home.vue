@@ -3,7 +3,7 @@
 		<view class="information">
 			<image class="bg" src="/static/images/bg.png"></image>
 			<view class="personalInformation">
-				<span class="icon iconfont icon-basic setUser"></span>
+				<span class="icon iconfont icon-basic setUser" @click="toSetup"></span>
 				<view class="user">
 					<image class="logo" src="/static/logo.jpg"></image>
 					<view>
@@ -28,18 +28,18 @@
 					</text>
 				</navigator>
 			</view>
-			<view class="account-item">
+<!-- 			<view class="account-item">
 				<text class="left">账户余额</text>
 				<text class="right">{{mine.store_remain}}元<span class="icon iconfont icon-right"></span></text>
-			</view>
+			</view> -->
 			<view class="account-item">
 				<text class="left">优惠券</text>
 				<text class="right">{{mine.store_coupon>0 ? `${mine.store_coupon}张可使用`:'暂无可使用的优惠券'}}<span class="icon iconfont icon-right"></span></text>
 			</view>
-			<view class="account-item">
+<!-- 			<view class="account-item">
 				<text class="left">意见反馈</text>
 				<text class="right">期待您的建议<span class="icon iconfont icon-right"></span></text>
-			</view>
+			</view> -->
 			<view class="account-item">
 				<text class="left">版本号：v1.0.0</text>
 			</view>
@@ -72,11 +72,17 @@
 					// store_user_phone: "17828019562"
 				})
 			}
+			const toSetup=(item)=>{
+				uni.navigateTo({
+				    url: '/pages/tabBar/home/setup'
+				})
+			}
 			
 			return {
 				userName,
 				mine,
-				getMineQuery
+				getMineQuery,
+				toSetup
 			}
 		}
 	})

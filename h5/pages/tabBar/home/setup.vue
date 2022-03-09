@@ -1,0 +1,163 @@
+<template>
+	<view class="home-container">
+		<view class="information">
+			<view class="personalInformation">
+				<view class="user">
+					<image class="logo" src="/static/logo.jpg"></image>
+					<view>
+						<view class="username">{{userName}}</view>
+						<!-- <view class="userid">id:12121212</view> -->
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="account">
+			<view class="account-item">
+				<navigator :url="'/pages/address/address'">
+					<text class="left">我的收货地址</text>
+					<text class="right">
+						管理我的地址<span class="icon iconfont icon-right"></span>
+					</text>
+				</navigator>
+			</view>
+			<view class="account-item">
+				<text class="left">绑定手机号</text>
+				<text class="right">未绑定<span class="icon iconfont icon-right"></span></text>
+			</view>
+		</view>
+		<button class="submit" type="primary" @click="out">退出登录</button>
+	</view>
+</template>
+
+<script lang="ts">
+	import { defineComponent,ref,reactive } from "vue"
+	import { getStorageSync,removeStorageSync } from '@/utils/token'
+	import { mineQuery } from "@/api/home"
+	import { logout } from '@/api/login'
+	export default defineComponent({
+		onShow: function() {
+			this.getMineQuery();
+		},
+		setup() {
+			const userName = ref("")
+			const mine = ref({})
+			const descData = ref([
+				{value:"",label:"我的订单"},
+				{value:"",label:"我的订单"},
+			])
+			userName.value = getStorageSync("userName") || "张三"
+			
+			const getMineQuery = ()=>{
+				const params={ "s_id":"10","token":"71061cbdf40e29a23d58cddd052e714c"}
+				// mineQuery(params).then(res=>{
+				// 	mine.value = res.data
+				// 	//store_user_name: "17828019562"
+				// 	// store_user_phone: "17828019562"
+				// })
+			}
+			const out = ()=>{
+				logout().then(res=>{
+					removeStorageSync("token")
+					uni.navigateTo({
+					    url: '/pages/login/login'
+					})
+				})
+			}
+			
+			return {
+				userName,
+				mine,
+				getMineQuery,
+				out
+			
+			}
+		}
+	})
+</script>
+
+<style lang="scss" scoped>
+	.home-container{
+		.information{
+			position: relative;
+			overflow: hidden;
+			.personalInformation{
+				margin: 20rpx;
+				padding:20rpx;
+				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
+				background: #fff;
+				border-radius: 10rpx;
+				.user{
+					height: 100rpx;
+					display: flex;
+					align-items: center;
+					image{
+						margin-right:30rpx;
+						width: 100rpx;
+						height: 100rpx;
+						border-radius: 50%;
+					}
+					.username{
+						font-weight: bold;
+						font-size: 36rpx;
+					}
+					// .userid{
+					// 	color:#333;
+					// 	font-size: 20rpx;
+					// }
+				}
+				.store{
+					text-align: left;
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					border-top: solid 1px #ddd;
+					margin-top: 10rpx;
+					padding-top:20rpx;
+					line-height: 32rpx;
+					.left{
+						color:#333;
+						font-size: 30rpx;
+						font-weight: bold;
+						.iconfont{
+							margin-right: 5rpx;
+						}
+					}
+				}
+			}
+		}
+		.account{
+			margin: 20rpx;
+			margin-top:0;
+			background-color: #fff;
+			box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
+			border-radius: 10rpx;
+			overflow: hidden;
+			&-item{
+				margin:0 20rpx;
+				padding:20rpx 0;
+				height: 30rpx;
+				border-bottom: solid 1px #ddd;
+				.left{
+					color:#333;
+					font-size: 28rpx;
+				}
+				.right{
+					float: right;
+					font-size: 24rpx;
+					color: #999;
+					.iconfont{
+						margin-left: 5rpx;
+						font-size: 20rpx;
+					}
+				}
+				&:last-child{
+					border: none;
+				}
+			}
+		}
+		button{
+			margin: 20rpx;
+			border-radius: 50rpx;
+		}
+	}
+</style>

@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "24590650",
+      "name": "手机号、手机",
+      "font_class": "a-shoujihaoshouji",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    },
+    {
+      "icon_id": "24591502",
+      "name": "手机号、手机",
+      "font_class": "a-shoujihaoshouji1",
+      "unicode": "e6b4",
+      "unicode_decimal": 59060
+    },
+    {
+      "icon_id": "24666807",
+      "name": "用户注册协议",
+      "font_class": "yonghuzhucexieyi",
+      "unicode": "e6e7",
+      "unicode_decimal": 59111
+    },
+    {
+      "icon_id": "24669218",
+      "name": "通讯录",
+      "font_class": "tongxunlu",
+      "unicode": "e6f1",
+      "unicode_decimal": 59121
+    },
+    {
+      "icon_id": "24671051",
+      "name": "我的",
+      "font_class": "wode1",
+      "unicode": "e701",
+      "unicode_decimal": 59137
+    },
+    {
+      "icon_id": "24671780",
+      "name": "电话",
+      "font_class": "dianhua",
+      "unicode": "e708",
+      "unicode_decimal": 59144
+    },
+    {
+      "icon_id": "24684553",
+      "name": "注册",
+      "font_class": "zhuce",
+      "unicode": "e71c",
+      "unicode_decimal": 59164
+    },
+    {
       "icon_id": "2892818",
       "name": "删除",
       "font_class": "shanchu1",

@@ -17,16 +17,18 @@
 		setup() {
 			
 			const listData = [
-				{value:"expense",label:"费用单",navigate:""},
+				{value:"expense",label:"费用单",navigate:"/pages/feeBill/feeBill"},
 				// {value:"scrap",label:"报废",url:""},
 				// {value:"orderFile",label:"推荐订货",url:""},
 				// {value:"inventory",label:"库存盘点",url:""},
 				// {value:"report",label:"统计报表",url:""},
-				{value:"chargeManagement",label:"账单",url:""},
-				{value:"inventory",label:"资产",url:""},
+				{value:"chargeManagement",label:"账单",navigate:""},
+				{value:"refundBill",label:"设置",navigate:"/pages/tabBar/home/setup"},
+				// {value:"inventory",label:"资产",navigate:""},
 				{value:"expenseType",label:"待付款",switch:"/pages/tabBar/order/order?tabIndex=2"},
 				{value:"acceptance",label:"待验收",switch:"/pages/tabBar/order/order?tabIndex=4"},
-				{value:"refundBill",label:"退货",navigate:"/pages/tabBar/order/returnList"},
+				// navigate:"/pages/tabBar/order/returnList"
+				{value:"refundBill",label:"售后",switch:"/pages/tabBar/order/order?tabIndex=5"},
 			]
 			const toPage=(item)=>{
 				item.navigate && uni.navigateTo({

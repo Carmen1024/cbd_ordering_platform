@@ -148,6 +148,7 @@
 				// console.log(this.areaData)
 			},
 			submit(){
+				
 				const data = {
 					provinceData:this.provinceData,
 					cityData:this.cityData,

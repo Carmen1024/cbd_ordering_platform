@@ -92,25 +92,25 @@
             
         }
         ,{
-            "path" : "pages/pay/pay",
+            "path" : "pages/feeBill/feeBill",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
-				"navigationStyle":"custom",
+                "navigationBarTitleText": "费用单",
+				// "navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
             
         }
-        ,{
-            "path" : "pages/cost/feeBill",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-				"navigationStyle":"custom",
-                "enablePullDownRefresh": false
-            }
-            
-        }
+		,{
+		    "path" : "pages/feeBill/detail",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "费用单详情",
+				// "navigationStyle":"custom",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
         ,{
             "path" : "pages/tabBar/subscribe/search",
             "style" :                                                                                    
@@ -160,20 +160,83 @@
             }
             
         }
-		,{
-		    "path" : "pages/login/forgetPassword",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "忘记密码",
-		        "enablePullDownRefresh": false
-		    }
-		    
-		}
         ,{
             "path" : "pages/tabBar/order/returnList",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "退货",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/pay/payback",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "支付",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/feeBill/info",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/feeBill/billMain",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "费用详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/receive/list",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "发货单列表",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/receive/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "发货单详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/tabBar/order/refund",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "申请退货",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/tabBar/home/setup",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "设置",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/tabBar/home/coupon",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "优惠券",
                 "enablePullDownRefresh": false
             }
             

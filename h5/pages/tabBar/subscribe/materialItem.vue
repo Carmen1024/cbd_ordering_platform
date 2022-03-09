@@ -62,6 +62,13 @@
 						icon:"none"
 					});
 					return
+				}else if(item.c_valid==0){
+					uni.showToast({
+					    title: '物料已失效，无法加购',
+					    duration: 2000,
+						icon:"none"
+					});
+					return
 				}
 				item.num++
 				const params = {

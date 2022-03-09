@@ -47,9 +47,11 @@
 		// margin-top: 200rpx;
 	}
 	&-item{
+		position: relative;
 		display: flex;
 		height: 100rpx;
 		align-items: center;
+		
 		text{
 			font-weight: bold;
 			min-width: 130rpx;
@@ -60,6 +62,19 @@
 			background-color: #efefef;
 			border-radius: 20rpx;
 		}
+		.iconfont{
+			position: absolute;
+			right: 20rpx;
+			font-size: 36rpx;
+			color: $uni-color-primary;
+		}
+		button{
+			margin: auto 10rpx;
+		}
+		.sendDisable{
+			background-color:$uni-bg-color-grey;
+			color:#999;
+		}
 	}
 	button{
 		margin-top: 20rpx;
@@ -67,5 +82,35 @@
 	}
 	.delete{
 		border: solid 1px #ddd;
+	}
+	&-style{
+		margin-top: 20rpx;
+		width: 100%;
+		text-align: center;
+		.styles{
+			display: flex;
+			justify-content: center;
+			margin-top: 20rpx;
+			.style-item{
+				margin: 20rpx;
+				// width: 100rpx;
+				// height: 130rpx;
+				.iconfont{
+					display: block;
+					margin-bottom: 10rpx;
+					padding: 20rpx;
+					font-size: 50rpx;
+					background-color: #f8f8f8;
+					border-radius: 50%;
+					border: solid 1px $uni-color-primary;
+					color: $uni-color-primary;
+				}
+				view{
+					width: 100%;
+					text-align: center;
+					line-height: 50rpx;
+				}
+			}
+		}
 	}
 }

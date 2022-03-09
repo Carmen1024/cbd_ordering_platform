@@ -53,8 +53,8 @@
 			</checkbox-group>
 			<view class="zeroList" v-show="stockZeroList.length>0">
 				<view>
-					<text class="left">失效宝贝{{stockZeroList.length}}件</text>
-					<text class="right" @click="deletesZeroList">清空失效宝贝</text>
+					<text class="left">失效商品{{stockZeroList.length}}件</text>
+					<text class="right" @click="deletesZeroList">清空失效商品</text>
 				</view>
 				<view class="commodityItem" v-for="(item,index) in stockZeroList">
 					<checkbox :checked="item.checked" :value="item.m_id" disabled/>

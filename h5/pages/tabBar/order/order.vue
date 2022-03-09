@@ -37,61 +37,27 @@
 			@scrolltolower="lower"
 		>
 			<view v-for="(item,index) in orderData">
-				<view class="orderItem" @click="toOrderDetail(item)">
+				<view class="orderItem">
 					<!--  -->
-					<view class="title">
-						<text class="left">{{item.o_p_code}}</text>
-						<view class="right">
-							<text>{{item.o_s_status_desc}}</text>
-							<!-- <text>{{item.o_s_status_desc}}</text> -->
+					<view @click="toOrderDetail(item)">
+						<view class="title">
+							<text class="left">{{item.o_p_code}}</text>
+							<view class="right">
+								<text>{{item.o_s_status_desc}}</text>
+							</view>
 						</view>
-					</view>
-					<view class="materialList">
-						<view class="materialItem" v-for="(material,index) in item.sub_order_materials" v-show="index<3">
-							<image :src="material.img || '/static/logo.jpg'"></image>
+						<o-material :materials="item.sub_order_materials" />
+						<view class="msg">
 							<view class="detail">
-								<view class="name">{{material.o_m_name || '物料名称'}}</view>
-								<view class="price">
-									<text class="total">
-										<span class="icon iconfont icon-jine"></span>{{material.o_m_price}}
-									</text>
-									<view class="numHandle">
-										<text>x{{material.o_m_count}}</text>
-									</view>
+								<view class="left"><text>{{item.c_create_time}}</text></view>
+								<view class="right">
+									<text>共计：{{item.s_o_m_num}}件,</text>
+									<text class="price">{{item.o_s_status==1?'需付款':'实付款'}}：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
 								</view>
 							</view>
 						</view>
-						<view v-show="item.sub_order_materials.length>3" class="more">
-							查看更多 <span class="icon iconfont icon-right"></span>
-						</view>
 					</view>
-					<view class="msg" v-if="item.o_s_status==1">
-						<view class="detail">
-							<!-- <text>总价<span class="icon iconfont icon-jine"></span>{{item.o_p_origin_money || 0}}</text> -->
-							<!-- <text>优惠<span class="icon iconfont icon-jine"></span>{{Math.abs(item.o_p_discount_money) || 0}}</text> -->
-							<view class="left"><text>{{item.c_create_time}}</text></view>
-							<view class="right">
-								<text>共计：{{item.s_o_m_num}}件,</text>
-								<text class="price">需付款<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money || 0}}</text>
-							</view>
-						</view>
-						<view class="numHandle">
-							<button class="uni-button" size="mini">取消订单</button>
-							<button type="primary" size="mini" @click="submit">去付款</button>
-						</view>
-					</view>
-					<view class="msg" v-else>
-						<view class="detail">
-							<view class="left"><text>{{item.c_create_time}}</text></view>
-							<view class="right">
-								<text>共计：{{item.s_o_m_num}}件,</text>
-								<text class="price">实付款：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
-							</view>
-						</view>
-						<view class="numHandle">
-							<button size="mini">再次购买</button>
-						</view>
-					</view>
+					<o-button :order="item" @refresh="resetPage" />
 				</view>
 			</view>
 			<view class="loading">{{loading?'加载中':'到底喽'}}</view>
@@ -107,7 +73,13 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { orderList } from '@/api/order'
 	import { statusData,tabOptions } from './enum'
+	import OButton from "./components/oButton.vue"
+	import OMaterial from "./components/oMaterial.vue"
 	export default defineComponent({
+		components:{
+			OButton,
+			OMaterial
+		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log("onLoad")
 			console.log(option.tabIndex); //打印出上个页面传递的参数。
@@ -117,7 +89,7 @@
 		},
 		onShow: function() {
 			console.log("onShow")
-			this.getOrderData();
+			this.resetPage();
 		},
 		setup() {
 			
@@ -131,7 +103,7 @@
 				o_p_code:"",
 				c_create_start_time:"",
 				c_create_end_time:"",
-				o_s_status:[1,2,3,4,5,6,7,8,9,10,11]
+				// o_s_status:[1,2,3,4,5,6,7,8,9,10,11]
 			})
 			
 			const loading = ref(true)
@@ -153,7 +125,7 @@
 						return item
 					});
 					if(data.length<page.value.pageSize) loading.value = false;
-					orderData.value = [...orderData.value,...data]
+					orderData.value = page.value.pageNum==1 ? data : [...orderData.value,...data]
 					
 					page.value.pageNum++;
 				})
@@ -225,6 +197,14 @@
 			},
 			openPicker(){
 				this.$refs.datetimePicker.show()
+			},
+			resetPage(){
+				// this.orderData = []
+				this.page.pageNum = 1
+				this.condition.o_p_code = ""
+				this.condition.c_create_start_time = ""
+				this.condition.c_create_end_time = ""
+				this.getOrderData();
 			}
 		}
 	})
@@ -303,63 +283,7 @@
 						}
 					}
 				}
-				.materialList{
-					margin: 20rpx 0;
-					overflow: hidden;
-					.materialItem{
-						margin: 20rpx 0;
-						// width: calc(100% - 80rpx);
-						display: flex;
-						align-items:center;
-						image{
-							border-radius: 20rpx;
-							margin-right:20rpx;
-							width: 100rpx;
-							height: 100rpx;
-						}
-						.detail{
-							width: calc(100% - 150rpx);
-							height: 100rpx;
-							line-height: 50rpx;
-							font-size: 26rpx;
-							.name{
-								font-weight: bold;
-							}
-							.price{
-								width: 100%;
-								.total{
-									color:#005bac;
-									font-size: 30rpx;
-									// .iconfont{
-									// 	font-size:18rpx
-									// }
-								}
-								.numHandle{
-									display: flex;
-									float: right;
-									// width: 200rpx;
-									.iconfont{
-										padding:0 10rpx;
-										color:#999;
-									}
-								}
-							}
-						}
-					}
-					.more{
-						text-align: right;
-						color:#999;
-						line-height: 40rpx;
-						.iconfont{
-							color:#fff;
-							background-color: #999;
-							border-radius: 50%;
-							font-size: 20rpx;
-							padding:2rpx;
-						}
-					}
-				}
-
+				
 				.msg{
 					text-align: right;
 					.detail{

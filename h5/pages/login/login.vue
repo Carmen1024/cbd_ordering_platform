@@ -1,56 +1,46 @@
 <template>
 	<view class="user-container">
-		<view class="user-container-main">
-			<image class="logo" src="/static/logo.jpg"></image>
-			<view class="user-container-item">
-				<text>账号</text>
-				<input class="uni-input" v-model="user.name" placeholder="请输入用户名" />
+		<account1 v-if="style==0" />
+		<verification v-else />
+		<view class="user-container-style">
+			<view>
+				其他登录方式
 			</view>
-			<view class="user-container-item">
-				<text>密码</text>
-				<input class="uni-input" v-model="user.password" placeholder="请输入密码" />
+			<view class="styles">
+				<view class="style-item" v-if="style==1" @click="style=0">
+					<span class="icon iconfont icon-a-shoujihaoshouji"></span>
+					<view>账号</view>
+				</view>
+				<view class="style-item" v-else @click="style=1">
+					<span class="icon iconfont icon-wode1"></span>
+					<view>手机</view>
+				</view>
 			</view>
-			<view style="text-align: right;">
-				<navigator class="" url="/pages/login/forgetPassword">
-					<text>忘记密码</text>
-				</navigator>
-			</view>
-			<button class="submit" type="primary" @click="submit">登录</button>
-			<button class="delete" @click="reset">重置</button>
+
 		</view>
+	
 	</view>
 </template>
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { setStorageSync } from '@/utils/token'
+	import account1 from './components/account.vue'
+	import verification from "./components/verification.vue"
 	
 	export default defineComponent({
+		components:{
+			account1,
+			verification
+		},
 		setup() {
+			const style = ref(0)
 
-			const user = ref({
-				name:"",
-				password:""
-			})
 			return {
-				user,
+				style
 			}
 		},
 		methods: {
-			submit(){
-				console.log(this.user)
-				setStorageSync('userName',this.user.name)
-				setStorageSync('token','0f99a688f420243cda8d8166a4e69c4c')
-				uni.switchTab({
-				    url: '/pages/tabBar/dashboard/dashboard'
-				});
-			},
-			reset(){
-				this.user = {
-					name:"",
-					password:""
-				}
-			}
+			
 			
 		}
 	})

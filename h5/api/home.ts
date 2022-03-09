@@ -68,3 +68,21 @@ export function addressAreas(data: object) {
     data
   })
 }
+
+///g/login_store/query
+export function storeList(data: object) {
+  return request({
+    url: '/g/login_store/query',
+    method: 'post',
+    data
+  })
+}
+
+///g/login_store/set_current_store
+export function setStore(data: object) {
+  return request({
+    url: '/g/login_store/set_current_store',
+    method: 'post',
+    data
+  })
+}
