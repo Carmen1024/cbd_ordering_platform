@@ -15,10 +15,10 @@
 				</view>
 			</view>
 			<view class="btn">
-				<text>今天</text>
-				<text>昨天</text>
-				<text>7天内</text>
-				<text>30天内</text>
+				<text @click="checkDays(0)">今天</text>
+				<text @click="checkDays(1)">昨天</text>
+				<text @click="checkDays(7)">7天内</text>
+				<text @click="checkDays(30)">30天内</text>
 			</view>
 		</view>
 		<scroll-view 
@@ -27,28 +27,25 @@
 			@scrolltolower="lower"
 		>
 			<view v-for="(item,index) in orderData">
-				<view class="orderItem" @click="toOrderDetail(item)">
-					<!-- 
-						订单支付：CG20220115001          ￥-15000.00
-						交易时间：2022-01-15    12:01:35
-						支付流水：sc2200115552355841477
-						付款人：张三  6200115555665235584 
-					-->
-					<view class="title">
-						<text class="left">{{item.o_p_code}}</text>
-						<view class="right">
-							<text>{{item.o_s_status_desc}}</text>
-						</view>
-					</view>
-					<o-bill :bills="item.cost_detail" />
+				<view class="orderItem">
 					<view class="msg">
 						<view class="detail">
-							<view class="left"><text>{{item.c_create_time}}</text></view>
+							<view class="left">
+								{{item.tr_order_num}}
+							</view>
 							<view class="right">
-								<text class="price">共计：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
+								<span class="icon iconfont icon-jine"></span>{{item.tr_tx_amt}}
 							</view>
 						</view>
-						<o-button :order="item" />
+						<view class="detail">
+							<text>付款人：{{item.tr_payer_name}}  {{item.tr_payer_acc_num}} </text>
+						</view>
+						<view class="detail">
+							<text>交易时间：{{item.tr_tx_time}} </text>
+						</view>
+						<view class="detail">
+							<text>支付流水：{{item.tr_bank_sn}} </text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -79,10 +76,7 @@
 				"pageSize":20,
 				"pageNum":1,
 			})
-			const condition = ref({
-				"c_create_start_time": timeFormat(new Date(),"yyyy-MM-dd") + " 00:00:01",//起始时间
-				"c_create_end_time": timeFormat(new Date(),"yyyy-MM-dd") + " 23:23:59",//终止时间
-			})
+			const condition = ref({})
 			const loading = ref(true)
 			const getOrderData=()=>{
 				const params ={
@@ -125,6 +119,33 @@
 					this.condition.c_create_start_time=e[0] + " 00:00:00"
 					this.condition.c_create_end_time=e[1] + " 23:59:59"
 				}
+				this.resetOrder()
+			},
+			checkDays(type){
+				let c_create_start_time = ""
+				const nowDate = new Date()
+				let c_create_end_time = timeFormat(nowDate,"yyyy-MM-dd")
+				if(type==0){
+					c_create_start_time = timeFormat(nowDate,"yyyy-MM-dd")
+				}
+				if(type==1){
+					const lastday = timeFormat(new Date(nowDate.getTime()-1000*60*60*24*2),"yyyy-MM-dd")
+					c_create_start_time = lastday
+					c_create_end_time = lastday
+				}
+				if(type==7){
+					c_create_start_time = timeFormat(new Date(nowDate.getTime()-1000*60*60*24*7),"yyyy-MM-dd")
+				}
+				if(type==30){
+					c_create_start_time = timeFormat(new Date(nowDate.getTime()-1000*60*60*24*30),"yyyy-MM-dd")
+				}
+				this.condition = {
+					"c_create_start_time": c_create_start_time + " 00:00:01",//起始时间
+					"c_create_end_time": c_create_end_time + " 23:23:59",//终止时间
+				}
+				this.resetOrder()
+			},
+			resetOrder(){
 				this.page.pageNum = 1
 				this.orderData = []
 				this.getOrderData()
@@ -202,52 +223,19 @@
 				padding:20rpx;
 				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
 				background: #fff;
-				border-radius: 10rpx;
-				.title{
-					width: 100%;
-					height: 40rpx;
-					line-height: 40rpx;
-					.right{
+				border-radius: 10rpx;	
+				.msg{
+					.detail{
+						width: 100%;
+						height: 50rpx;
+						line-height: 50rpx;
+						font-size: 26rpx;
+						margin-top: 10rpx;
 						text{
-							color:#999;
-							margin-left: 10rpx;
+							margin-left:10rpx;
+							color:#666;
 						}
 					}
-				}
-				
-				.msg{
-					text-align: right;
-					.detail{
-							width: 100%;
-							height: 50rpx;
-							line-height: 50rpx;
-							font-size: 26rpx;
-							margin-top: 10rpx;
-							text{
-								margin-left:10rpx;
-								color:#666;
-							}
-							.iconfont{
-								font-size:12rpx
-							}
-							.price{
-								color:#000;
-							}
-						}
-						.numHandle{
-							margin-top: 10rpx;
-							text-align: right;
-							width: 100%;
-							height: 60rpx;
-							.uni-input{
-								padding:5rpx;
-								width:80rpx;
-								height: 40rpx;
-								border-left: solid 1px #ddd;
-								border-right: solid 1px #ddd;
-								text-align: center;
-							}
-						}
 					
 				}
 			}
