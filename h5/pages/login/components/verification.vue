@@ -43,9 +43,7 @@
 				}
 				
 				setStorageSync('token','0f99a688f420243cda8d8166a4e69c4c')
-				uni.switchTab({
-				    url: '/pages/tabBar/dashboard/dashboard'
-				});
+				this.$emit("loginAction")
 			},
 			sendCode(){
 				this.sendDisable = this.sendDisable ? false : true;

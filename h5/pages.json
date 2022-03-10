@@ -241,6 +241,24 @@
             }
             
         }
+        ,{
+            "path" : "pages/tabBar/home/store",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "门店",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/transaction/transaction",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "账单",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"subPackages": [{
 			"root": "pages/API",

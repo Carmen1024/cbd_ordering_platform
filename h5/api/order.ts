@@ -121,3 +121,12 @@ export function receiveMaterials(data: object) {
   })
 }
 
+// 交易流水 账单 
+export function transactionList(data: object) {
+  return request({
+    url: '/g/proced/bill/query/bill/list',
+    method: 'post',
+    data
+  })
+}
+

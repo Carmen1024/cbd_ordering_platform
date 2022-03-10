@@ -47,9 +47,9 @@
 				login({"eq":{user_phone,user_pass}}).then(res=>{
 					// setStorageSync('token','0f99a688f420243cda8d8166a4e69c4c')
 					setStorageSync('token',res.data.token)
-					uni.switchTab({
-					    url: '/pages/tabBar/dashboard/dashboard'
-					});
+					setStorageSync("userName",user_phone)
+					this.$emit("loginAction")
+
 				})
 
 			},

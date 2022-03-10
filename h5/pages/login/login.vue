@@ -1,8 +1,8 @@
 <template>
 	<view class="user-container">
-		<account1 v-if="style==0" />
-		<verification v-else />
-		<view class="user-container-style">
+		<account @loginAction="action" v-if="style==0" />
+		<!-- <verification @loginAction="action" v-else /> -->
+<!-- 		<view class="user-container-style">
 			<view>
 				其他登录方式
 			</view>
@@ -17,19 +17,20 @@
 				</view>
 			</view>
 
-		</view>
+		</view> -->
 	
 	</view>
 </template>
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import account1 from './components/account.vue'
+	import { setStorageSync } from '@/utils/token'
+	import Account from './components/account.vue'
 	import verification from "./components/verification.vue"
-	
+	import { getStore } from "@/api/home"
 	export default defineComponent({
 		components:{
-			account1,
+			Account,
 			verification
 		},
 		setup() {
@@ -40,7 +41,14 @@
 			}
 		},
 		methods: {
-			
+			action(){
+				// "store_code": "837010030",
+				// "store_name": "3892-茶百道济南章丘和谐广场店",
+				// "_id": "3734828b44084cf9a0c99847133b9242"
+				uni.switchTab({
+				    url: '/pages/tabBar/home/home'
+				})
+			}
 			
 		}
 	})

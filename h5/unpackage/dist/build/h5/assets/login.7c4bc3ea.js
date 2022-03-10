@@ -1,0 +1,1 @@
+import{r as t}from"./request.bd165be5.js";function o(o){return t({url:"/g/login/login_with_biz",method:"post",data:o})}function r(o){return t({url:"/g/login/logout",method:"post",data:o})}function e(o){return t({url:"/g/login/test_reset_phone_code",method:"post",data:o})}function n(o){return t({url:"/g/login/pass_reset",method:"post",data:o})}export{r as a,e as g,o as l,n as r};

@@ -18,11 +18,7 @@
 			
 			const listData = [
 				{value:"expense",label:"费用单",navigate:"/pages/feeBill/feeBill"},
-				// {value:"scrap",label:"报废",url:""},
-				// {value:"orderFile",label:"推荐订货",url:""},
-				// {value:"inventory",label:"库存盘点",url:""},
-				// {value:"report",label:"统计报表",url:""},
-				{value:"chargeManagement",label:"账单",navigate:""},
+				{value:"chargeManagement",label:"账单",navigate:"/pages/transaction/transaction"},
 				{value:"refundBill",label:"设置",navigate:"/pages/tabBar/home/setup"},
 				// {value:"inventory",label:"资产",navigate:""},
 				{value:"expenseType",label:"待付款",switch:"/pages/tabBar/order/order?tabIndex=2"},

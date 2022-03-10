@@ -25,8 +25,24 @@
 					</view>
 				</view>
 			</view>
-			<view>
-				
+			<view class="reason">
+				<text>退货原因</text>
+				<input class="uni-input" maxlength="50" v-model="refund_reason" placeholder="请输入退货原因" />
+			</view>
+			<view class="imageMode">
+				<view>上传凭证(最多6张)：</view>
+				<uni-file-picker 
+					v-model="images"  
+					file-mediatype="image"
+					mode="grid"
+					file-extname="png,jpg"
+					:limit="6"
+					
+					@progress="progress" 
+					@success="success" 
+					@fail="fail" 
+					@select="select"
+				/>
 			</view>
 		</view>
 		<view class="account">
@@ -42,6 +58,8 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { subOrderDetail,orderRefund } from '@/api/order'
+	import { upload } from '@/api/upload'
+	import {uploadImg} from '@/utils/utils'
 	export default defineComponent({
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			// this.o_id = option.o_id;
@@ -54,6 +72,8 @@
 			const orderDetailData = ref({})
 			const o_m_count = ref(0)
 			const m_c_count = ref(0)
+			const refund_reason=ref("")
+			const imageValue = ref([])
 			const getReceiveList=()=>{
 				const { _id } = order.value
 				subOrderDetail({ _id }).then(res=>{
@@ -74,7 +94,9 @@
 				order,
 				m_c_count,
 				o_m_count,
-				option
+				option,
+				refund_reason,
+				images:[]
 			}
 		},
 		methods: {
@@ -86,8 +108,10 @@
 					const { o_m_name:m_name,m_c_count:m_count,o_m_package:m_unit,m_id} = item;
 					return { m_name,m_count,m_unit,m_id}
 				}).filter(item=>item.m_count>0)
+				const refund_reason = this.refund_reason
+				const images = this.images
 				const params={
-					o_s_id,o_s_code,materials_list
+					o_s_id,o_s_code,materials_list,refund_reason,images
 				}
 				console.log(params)
 				orderRefund(params).then(res=>{
@@ -125,7 +149,33 @@
 				})
 				this.m_c_count = count
 			},
-			
+			// 获取上传状态
+			select(e){
+				console.log('选择文件：',e)
+				this.upload(e.tempFilePaths)
+			},
+			upload(filePaths){
+				this.images = []
+				filePaths.map(item=>{
+					uploadImg(item).then(filePath=>{
+						console.log(filePath)
+						this.images.push(filePath)
+					})
+				})
+			},
+			// 获取上传进度
+			progress(e){
+				console.log('上传进度：',e)
+			},
+			// 上传成功
+			success(e){
+				console.log('上传成功')
+			},
+
+			// 上传失败
+			fail(e){
+				console.log('上传失败：',e)
+			}
 		}
 	})
 </script>
@@ -141,7 +191,7 @@
 			overflow-x: hidden;
 			overflow-y:auto;
 			.other{
-				margin: 10px;
+				margin: 20rpx;
 				background-color: #fff;
 				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
 				border-radius: 10rpx;
@@ -237,6 +287,40 @@
 					}
 				}
 			}
+			.reason{
+				margin: 20rpx;
+				padding:20rpx;
+				background-color: #fff;
+				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
+				border-radius: 10rpx;
+				overflow: hidden;
+				height: 100rpx;
+				display: flex;
+				align-items: center;
+				text{
+					font-weight: bold;
+					min-width: 130rpx;
+				}
+				input{
+					text-align: left;
+					margin-left: 20rpx;
+					background-color: #efefef;
+					border-radius: 20rpx;
+				}
+			
+			}
+			.imageMode{
+				margin: 20rpx;
+				padding:20rpx;
+				background-color: #fff;
+				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
+				border-radius: 10rpx;
+				overflow: hidden;
+				view{
+					line-height: 50rpx;
+					// height: 50rpx;
+				}
+			}
 			
 		}
 		.account{
@@ -258,7 +342,7 @@
 				font-size: 30rpx;
 			}
 		}
-
+		
 	}
 </style>
 <style lang="scss">

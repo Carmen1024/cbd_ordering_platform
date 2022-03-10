@@ -16,13 +16,21 @@
 				<navigator :url="'/pages/address/address'">
 					<text class="left">我的收货地址</text>
 					<text class="right">
-						管理我的地址<span class="icon iconfont icon-right"></span>
+						管理我的地址<span class="icon iconfont icon-dituguanli"></span>
 					</text>
 				</navigator>
 			</view>
 			<view class="account-item">
-				<text class="left">绑定手机号</text>
-				<text class="right">未绑定<span class="icon iconfont icon-right"></span></text>
+				<text class="left">手机号</text>
+				<text class="right" @click="call">
+					{{mine.store_user_phone || userName}}<span class="icon iconfont icon-dianhua"></span>
+				</text>
+			</view>
+			<view class="account-item">
+				<text class="left">密码</text>
+				<navigator class="right" url="/pages/login/resetPassword">
+					去修改<span class="icon iconfont icon-bianji"></span>
+				</navigator>
 			</view>
 		</view>
 		<button class="submit" type="primary" @click="out">退出登录</button>
@@ -48,12 +56,13 @@
 			userName.value = getStorageSync("userName") || "张三"
 			
 			const getMineQuery = ()=>{
-				const params={ "s_id":"10","token":"71061cbdf40e29a23d58cddd052e714c"}
-				// mineQuery(params).then(res=>{
-				// 	mine.value = res.data
-				// 	//store_user_name: "17828019562"
-				// 	// store_user_phone: "17828019562"
-				// })
+				const s_id = getStorageSync("s_id")
+				const token = getStorageSync("token")
+				mineQuery({ s_id,token }).then(res=>{
+					mine.value = res.data
+					userName.value = res.data.store_user_name || res.data.store_user_phone || getStorageSync("userName")
+					
+				})
 			}
 			const out = ()=>{
 				logout().then(res=>{
@@ -63,13 +72,18 @@
 					})
 				})
 			}
+			const call=()=>{
+				uni.makePhoneCall({
+				    phoneNumber: mine.value.store_user_phone || getStorageSync("userName")
+				});
+			}
 			
 			return {
 				userName,
 				mine,
 				getMineQuery,
-				out
-			
+				out,
+				call
 			}
 		}
 	})

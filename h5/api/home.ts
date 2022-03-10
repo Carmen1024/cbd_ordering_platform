@@ -70,7 +70,7 @@ export function addressAreas(data: object) {
 }
 
 ///g/login_store/query
-export function storeList(data: object) {
+export function myStoreList(data: object) {
   return request({
     url: '/g/login_store/query',
     method: 'post',
@@ -82,6 +82,15 @@ export function storeList(data: object) {
 export function setStore(data: object) {
   return request({
     url: '/g/login_store/set_current_store',
+    method: 'post',
+    data
+  })
+}
+
+//获取当前用户默认门店信息
+export function getStore(data: object) {
+  return request({
+    url: '/g/login_store/get_current_store',
     method: 'post',
     data
   })

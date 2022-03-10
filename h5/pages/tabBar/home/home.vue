@@ -12,10 +12,12 @@
 					</view>
 				</view>
 				<view class="store">
-					<view class="left">
-						<text>{{mine.store_address}}</text>
-					</view>
-					<button type="primary" size="mini">更换门店</button>
+					<text>{{mine.store_address}}</text>
+					<navigator :url="'/pages/tabBar/home/store'">
+						<button type="primary" size="mini">
+							切换门店
+						</button>
+					</navigator>
 				</view>
 			</view>
 		</view>
@@ -28,18 +30,18 @@
 					</text>
 				</navigator>
 			</view>
-<!-- 			<view class="account-item">
+			<view class="account-item">
 				<text class="left">账户余额</text>
 				<text class="right">{{mine.store_remain}}元<span class="icon iconfont icon-right"></span></text>
-			</view> -->
+			</view>
 			<view class="account-item">
 				<text class="left">优惠券</text>
 				<text class="right">{{mine.store_coupon>0 ? `${mine.store_coupon}张可使用`:'暂无可使用的优惠券'}}<span class="icon iconfont icon-right"></span></text>
 			</view>
-<!-- 			<view class="account-item">
+			<view class="account-item">
 				<text class="left">意见反馈</text>
 				<text class="right">期待您的建议<span class="icon iconfont icon-right"></span></text>
-			</view> -->
+			</view>
 			<view class="account-item">
 				<text class="left">版本号：v1.0.0</text>
 			</view>
@@ -49,8 +51,8 @@
 
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
-	import { getStorageSync } from '@/utils/token'
-	import { mineQuery } from "@/api/home"
+	import { getStorageSync,setStorageSync } from '@/utils/token'
+	import { mineQuery,getStore } from "@/api/home"
 	export default defineComponent({
 		onShow: function() {
 			this.getMineQuery();
@@ -62,14 +64,16 @@
 				{value:"",label:"我的订单"},
 				{value:"",label:"我的订单"},
 			])
-			userName.value = getStorageSync("userName") || "张三"
 			
 			const getMineQuery = ()=>{
-				const params={ "s_id":"10","token":"71061cbdf40e29a23d58cddd052e714c"}
-				mineQuery(params).then(res=>{
-					mine.value = res.data
-					//store_user_name: "17828019562"
-					// store_user_phone: "17828019562"
+				getStore().then(res=>{
+					const s_id = res.data._id
+					setStorageSync("s_id",s_id)
+					const token = getStorageSync("token")
+					mineQuery({ s_id,token }).then(res=>{
+						mine.value = res.data
+						userName.value = res.data.store_user_name || res.data.store_user_phone || getStorageSync("userName")
+					})
 				})
 			}
 			const toSetup=(item)=>{
@@ -141,7 +145,7 @@
 					margin-top: 10rpx;
 					padding-top:20rpx;
 					line-height: 32rpx;
-					.left{
+					text{
 						color:#333;
 						font-size: 30rpx;
 						font-weight: bold;
