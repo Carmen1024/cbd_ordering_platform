@@ -21,7 +21,7 @@
 		</view>
 		<view class="noData" v-else>
 			<view><span class="icon iconfont icon-dituguanli"></span></view>
-			<view><text>您还没有门店</text></view>
+			<view><text>您还没有关联的门店</text></view>
 		</view>
 <!-- 		<view class="storeFoot">
 			<button class="submit" type="primary" @click="add">新增收货地址</button>
@@ -33,7 +33,7 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { myStoreList,getStore,setStore } from '@/api/home'
 	import { setStorageSync,getStorageSync } from '@/utils/token'
-
+	import { storeId } from '@/utils/utils'
 	export default defineComponent({
 		onShow:function(e){
 			this.getStoreList()
@@ -44,7 +44,7 @@
 			const getStoreList = ()=>{
 				myStoreList().then(res=>{
 					storeList.value = res.data.map(item=>{
-						item.default = item._id==getStorageSync("s_id") ? true : false
+						item.default = item._id==storeId() ? true : false
 						return item
 					})
 				})

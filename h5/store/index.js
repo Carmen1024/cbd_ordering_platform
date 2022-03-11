@@ -123,6 +123,18 @@ const store = createStore({
 					}
 				})
 			})
+		},
+		storeId : function(){
+			const my_store = JSON.parse(getStorageSync("my_store"))
+			if(my_store) return my_store._id
+			uni.showToast({
+			    title: "登录状态已失效，请重新登录",
+			    duration: 2000,
+				icon:"none"
+			});
+			uni.navigateTo({
+				url: '/pages/login/login'
+			})
 		}
 	}
 })

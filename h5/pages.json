@@ -259,6 +259,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/transaction/detail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "账单详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"subPackages": [{
 			"root": "pages/API",

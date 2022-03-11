@@ -1,12 +1,13 @@
 <template>
-	<view class="order-container">
+	<view class="transaction-container">
 		<view class="condition">
 			<view class="time">
 				<span class="icon iconfont icon-riqi"></span>
 				<view class="timeMod">
 					<uni-datetime-picker
 						ref="datetimePicker"
-						v-model="datetimerange"
+						:value="datetimerange"
+						:end="nowTime"
 						type="daterange"
 						rangeSeparator="至"
 						clear-icon
@@ -15,23 +16,24 @@
 				</view>
 			</view>
 			<view class="btn">
-				<text @click="checkDays(0)">今天</text>
-				<text @click="checkDays(1)">昨天</text>
-				<text @click="checkDays(7)">7天内</text>
-				<text @click="checkDays(30)">30天内</text>
+				<text 
+					v-for="(item,index) in buttonOptions" 
+					@click="checkDays(item.days)">
+					{{item.label}}
+				</text>
 			</view>
 		</view>
 		<scroll-view 
-			class="right scroll-Y orderData" v-if="orderData.length>0"
+			class="right scroll-Y transactionData" v-if="transactionData.length>0"
 			scroll-y="true" lower-threshold="50"
 			@scrolltolower="lower"
 		>
-			<view v-for="(item,index) in orderData">
-				<view class="orderItem">
+			<view v-for="(item,index) in transactionData" @click="toTransactionDetail(item)">
+				<view class="transactionItem">
 					<view class="msg">
 						<view class="detail">
 							<view class="left">
-								{{item.tr_order_num}}
+								订单号：{{item.tr_order_num}}
 							</view>
 							<view class="right">
 								<span class="icon iconfont icon-jine"></span>{{item.tr_tx_amt}}
@@ -62,23 +64,24 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { transactionList } from '@/api/order'
 	import { timeFormat } from '@/utils/utils'
+	import {buttonOptions} from './enum'
+	import { setStorageSync } from '@/utils/token'
 	export default defineComponent({
 		onShow: function() {
-			this.getOrderData();
+			this.getTransactionData();
 		},
 		setup() {
 			
-			const orderData = ref([])
-			const datetimerange = ref(
-				[timeFormat(new Date(),"yyyy-MM-dd"), timeFormat(new Date(),"yyyy-MM-dd")]
-			)
+			const transactionData = ref([])
+			const datetimerange = ref([])
+			const nowTime = timeFormat(new Date(),"yyyy-MM-dd")
 			const page = ref({
 				"pageSize":20,
 				"pageNum":1,
 			})
 			const condition = ref({})
 			const loading = ref(true)
-			const getOrderData=()=>{
+			const getTransactionData=()=>{
 				const params ={
 					"s_id": "10",
 					...page.value,
@@ -88,48 +91,42 @@
 					console.log(res);
 					const data = res.data
 					if(data.length<page.value.pageSize) loading.value = false;
-					orderData.value = [...orderData.value,...data]
+					transactionData.value = [...transactionData.value,...data]
 					page.value.pageNum++;
 				})
 			}
 			
-			const toOrderDetail=(item)=>{
+			const toTransactionDetail=(item)=>{
+				setStorageSync("transaction",JSON.stringify(item))
 				uni.navigateTo({
-				    url: '/pages/feeBill/detail?o_s_id='+item._id
+				    url: '/pages/transaction/detail'
 				})
 			}
 			
 			return {
-				orderData,
-				toOrderDetail,
-				getOrderData,
+				transactionData,
+				toTransactionDetail,
+				getTransactionData,
 				loading,
 				page,
 				condition,
-				datetimerange
+				datetimerange,
+				buttonOptions,
+				nowTime
 			}
 		},
 		methods: {
 			timeChange(e){
 				console.log(e);
-				if(e.length==0){
-					delete this.condition.c_create_start_time
-					delete this.condition.c_create_end_time
-				}else{
-					this.condition.c_create_start_time=e[0] + " 00:00:00"
-					this.condition.c_create_end_time=e[1] + " 23:59:59"
-				}
-				this.resetOrder()
+				this.datetimerange = e
+				this.resetTransaction()
 			},
 			checkDays(type){
-				let c_create_start_time = ""
 				const nowDate = new Date()
-				let c_create_end_time = timeFormat(nowDate,"yyyy-MM-dd")
-				if(type==0){
-					c_create_start_time = timeFormat(nowDate,"yyyy-MM-dd")
-				}
+				let c_create_start_time = this.nowTime
+				let c_create_end_time = this.nowTime
 				if(type==1){
-					const lastday = timeFormat(new Date(nowDate.getTime()-1000*60*60*24*2),"yyyy-MM-dd")
+					const lastday = timeFormat(new Date(nowDate.getTime()-1000*60*60*24),"yyyy-MM-dd")
 					c_create_start_time = lastday
 					c_create_end_time = lastday
 				}
@@ -139,36 +136,41 @@
 				if(type==30){
 					c_create_start_time = timeFormat(new Date(nowDate.getTime()-1000*60*60*24*30),"yyyy-MM-dd")
 				}
-				this.condition = {
-					"c_create_start_time": c_create_start_time + " 00:00:01",//起始时间
-					"c_create_end_time": c_create_end_time + " 23:23:59",//终止时间
-				}
-				this.resetOrder()
+				this.datetimerange = [c_create_start_time,c_create_end_time]
+				this.resetTransaction()
 			},
-			resetOrder(){
+			resetTransaction(){
+				const time = this.datetimerange
+				if(time.length==0){
+					delete this.condition.c_create_start_time
+					delete this.condition.c_create_end_time
+				}else{
+					this.condition.c_create_start_time=time[0] + " 00:00:00"
+					this.condition.c_create_end_time=time[1] + " 23:59:59"
+				}
 				this.page.pageNum = 1
-				this.orderData = []
-				this.getOrderData()
+				this.transactionData = []
+				this.getTransactionData()
 			},
 			lower: function(e) {
 				console.log(e)
-				this.loading && this.getOrderData();
+				this.loading && this.getTransactionData();
 			},
 			cancel(){
 				this.condition.o_p_code=""
 				this.page.pageNum = 1
-				this.orderData = []
-				this.getOrderData()
+				this.transactionData = []
+				this.getTransactionData()
 			},
 			openPicker(){
 				this.$refs.datetimePicker.show()
-			}
+			},
 		}
 	})
 </script>
 
 <style lang="scss" scoped>
-	.order-container{
+	.transaction-container{
 		width: 100%;
 		height: calc(100vh - 50px);
 			overflow-x: hidden;
@@ -209,7 +211,7 @@
 				}
 			}
 		}
-		.orderData{
+		.transactionData{
 
 			.loading{
 				text-align: center;
@@ -217,7 +219,7 @@
 				// height: 80rpx;
 				color:#999;
 			}
-			.orderItem{
+			.transactionItem{
 				margin: 20rpx;
 				width: calc(100% - 80rpx);
 				padding:20rpx;

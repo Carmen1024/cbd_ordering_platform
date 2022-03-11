@@ -34,6 +34,7 @@
 	import { materialQuerySearch,cartInsert,cartList } from '@/api/subscribe'
 	import materialItem from './materialItem'
 	import reaction from './reaction'
+	import { storeId } from '@/utils/utils'
 	export default defineComponent({
 		components:{
 			materialItem,
@@ -43,6 +44,7 @@
 			this.getCartList();
 		},
 		setup() {
+			const s_id = storeId()
 			const materialData = ref([])
 			let m_name = ref("")
 			let page = {
@@ -66,7 +68,7 @@
 				}
 				const params = {
 					r_g_id:"10",
-					s_id:"10",
+					s_id,
 					m_name:m_name.value,
 					...page
 				}
@@ -109,7 +111,7 @@
 			}
 			const getCartList=()=>{
 				cartMaterialList.value = []
-				cartList({"s_id": "10"}).then(res=>{
+				cartList({s_id}).then(res=>{
 					cartMaterialList.value = res.data || []
 				})
 			}

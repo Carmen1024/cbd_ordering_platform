@@ -68,11 +68,17 @@
 			const getMineQuery = ()=>{
 				getStore().then(res=>{
 					const s_id = res.data._id
-					setStorageSync("s_id",s_id)
+					setStorageSync("my_store",JSON.stringify(res.data))
 					const token = getStorageSync("token")
 					mineQuery({ s_id,token }).then(res=>{
 						mine.value = res.data
 						userName.value = res.data.store_user_name || res.data.store_user_phone || getStorageSync("userName")
+					})
+
+				},rej=>{
+					console.log(rej)
+					uni.navigateTo({
+					    url: '/pages/tabBar/home/store'
 					})
 				})
 			}

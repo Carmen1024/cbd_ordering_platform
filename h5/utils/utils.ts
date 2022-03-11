@@ -1,4 +1,5 @@
 // 工具
+import { getStorageSync } from '@/utils/token'
 // 获取路由参数
 export const getUrlParams = ()=>{
 	const url = location.href;
@@ -67,3 +68,18 @@ export const timeFormat = function (time?:Date,format?: string): string {
             .replace(/mm/g, minutes)
             .replace(/ss/g, seconds);
     }
+
+export const storeId = ()=>{
+	const my_store = JSON.parse(getStorageSync("my_store"))
+	// if(my_store) return my_store._id
+	if(my_store) return "10"
+	uni.showToast({
+	    title: "登录状态已失效，请重新登录",
+	    duration: 2000,
+		icon:"none"
+	});
+	uni.navigateTo({
+		url: '/pages/login/login'
+	})
+}
+

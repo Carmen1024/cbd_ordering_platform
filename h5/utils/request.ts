@@ -26,6 +26,7 @@ export const request = ({url,method,data,domin=host,contentType="application/jso
 						showCancel: false,
 						content: res.data.desc,
 					})
+					reject(res.data)
 				} else {
 					resolve(res.data)
 				}

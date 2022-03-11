@@ -2,7 +2,7 @@
 	<view class="notice-container">
 		<view class="title">
 			<image class="logo" src="/static/logo.jpg"></image>
-			<text>茶百道成都双楠店</text>
+			<text>{{my_store.store_name}}</text>
 		</view>
 		<view class="main" @click="toNoticePage">
 			<text class="left">
@@ -17,16 +17,19 @@
 
 <script lang="ts">
 	import { defineComponent } from "vue"
+	import { getStorageSync } from '@/utils/token'
 	export default defineComponent({
 		setup() {
+			const my_store = JSON.parse(getStorageSync("my_store"))
 			const toNoticePage=(item)=>{
 				uni.navigateTo({
 				    url: '/pages/notice/notice'
 				})
 			}
 			return {
-				toNoticePage
-			};
+				toNoticePage,
+				my_store
+			}
 		}
 	})
 </script>

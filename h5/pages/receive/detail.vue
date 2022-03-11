@@ -250,8 +250,11 @@
 			justify-content: flex-end;
 			align-items: center;
 			background-color: #f5f5f5;
+			text{
+				margin: 0 10rpx;
+			}
 			button{
-				margin: 20rpx 20rpx;
+				margin: 20rpx 10rpx;
 				border-radius: 20rpx;
 				height: 60rpx;
 				line-height: 60rpx;

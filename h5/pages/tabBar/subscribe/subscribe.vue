@@ -37,6 +37,7 @@
 	import reaction from './reaction'
 	import materialItem from './materialItem'
 	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList,cartDel } from '@/api/subscribe'
+	import { storeId } from '@/utils/utils'
 	export default defineComponent({
 		components:{
 			cart,
@@ -47,10 +48,16 @@
 			this.getCartCountAndPrice();
 			this.getCartList();
 		},
+		// computed: {
+		//     storeId() {
+		//        return this.$store.state.actions.storeId
+		//     }
+		// },
 		setup() {
 			const classifyData = ref([])
 			const materialData = ref([])
 			const countAndPrice = ref({})
+			const s_id = storeId()
 			const page = {
 				"pageSize":20,
 				"pageNum":1
@@ -85,7 +92,7 @@
 			const cartMaterialList = ref([])
 			const getCartList=()=>{
 				cartMaterialList.value = []
-				cartList({"s_id": "10"}).then(res=>{
+				cartList({s_id}).then(res=>{
 					cartMaterialList.value = res.data || []
 					scrollClassifyIndex.value = 0
 					scrollTop.value = 0
@@ -110,7 +117,7 @@
 			const getMaterialQuery=()=>{
 				const params = {
 					r_g_id:"10",
-					s_id:"10",
+					s_id,
 					...page
 				}
 				materialQuery(params).then(res=>{
@@ -136,7 +143,7 @@
 				materials:[]
 			})
 			const getCartCountAndPrice=()=>{
-				cartCountAndPrice({"s_id": "10"}).then(res=>{
+				cartCountAndPrice({ s_id }).then(res=>{
 					countAndPrice.value = res.data;
 				})
 			}
@@ -151,6 +158,7 @@
 			}
 						
 			return {
+				s_id,
 				classifyData,
 				materialData,
 				scrollClassifyIndex,
@@ -182,7 +190,7 @@
 					const lastMId = lastM._id
 					const params = {
 						r_g_id:"10",
-						s_id:"10",
+						s_id,
 						classifyId,lastMId,pageSize:this.page.pageSize,
 					}
 					

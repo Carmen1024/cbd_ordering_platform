@@ -36,6 +36,7 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { cartCountAndPrice,cartInsert,cartList } from '@/api/subscribe'
+	import { storeId } from '@/utils/utils'
 	export default defineComponent({
 		props:{
 			reactionMaterials : {
@@ -49,9 +50,9 @@
 			},
 		},
 		setup(props) {
-
+			const s_id = storeId()
 			return {
-				
+				s_id
 			}
 		},
 		methods:{
@@ -61,7 +62,7 @@
 					"m_id":item.r_m_id,
 				    "m_c_count":item.r_m_count,
 				    "m_c_unit":1,
-				    "s_id":"10"
+				    "s_id":this.s_id
 				}
 				this.$emit("jiaReaction",params)
 			}
