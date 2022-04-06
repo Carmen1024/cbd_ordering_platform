@@ -5,7 +5,7 @@
 			<span class="right icon iconfont icon-close" @click="reactionMaterials.show=false"></span>
 		</view>
 		<view class="commodityList">
-			<view class="commodityItem" v-for="(item,index) in reactionMaterials.materials">
+			<view class="commodityItem" v-for="(item,index) in materialData">
 				<image :src="item.img || '/static/logo.jpg'"></image>
 				<view class="detail">
 					<view class="name">{{item.m_name || '物料名称'}}</view>
@@ -14,7 +14,7 @@
 						<text class="right">
 							<span class="icon iconfont icon-jine"></span>
 							<text v-if="item.m_prices">
-								{{item.m_prices[0].m_p_money}}/箱
+								{{item.m_price}}/箱
 							</text>
 							<text v-else>100/箱</text>
 						</text>
@@ -36,7 +36,7 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { cartCountAndPrice,cartInsert,cartList } from '@/api/subscribe'
-	import { storeId } from '@/utils/utils'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
 		props:{
 			reactionMaterials : {
@@ -49,8 +49,18 @@
 				}
 			},
 		},
+		computed:{
+			materialData(){
+				return this.reactionMaterials.materials.map(item=>{
+					const num = item.m_prices ? item.m_prices[0].m_p_money : 0
+					console.log(num)
+					item.m_price = (num / 100).toFixed(2)
+					return item
+				})
+			}
+		},
 		setup(props) {
-			const s_id = storeId()
+			const {s_id} = linkStore()
 			return {
 				s_id
 			}

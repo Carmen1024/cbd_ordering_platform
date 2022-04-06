@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="order-container">
 		<view class="tab">
 			<text v-for="item in tabOptions" @click="checkTab(item)" :class="tabIndex==item.value && 'check'">
@@ -14,7 +15,7 @@
 				<view class="orderItem" @click="toOrderDetail(item)">
 					<!--  -->
 					<view class="title">
-						<text class="left">{{item.o_p_code}}</text>
+						<text class="left">单号：{{item.o_p_code}}</text>
 						<view class="right">
 							<text>{{item.o_s_status_desc}}</text>
 						</view>
@@ -24,7 +25,7 @@
 						<view class="detail">
 							<view class="left"><text>{{item.c_create_time}}</text></view>
 							<view class="right">
-								<text class="price">共计：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
+								<text class="price">共计：<span class="icon iconfont icon-jine"></span>{{(item.o_p_real_pay_money / 100).toFixed(2) || 0}}</text>
 							</view>
 						</view>
 						<o-button :order="item" />
@@ -46,10 +47,13 @@
 	import { statusData,tabOptions } from './enum'
 	import OButton from "./components/oButton.vue"
 	import OBill from "./components/oBill.vue"
+	import { linkStore } from '@/utils/utils'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		components:{
 			OButton,
-			OBill
+			OBill,
+			BackLayer
 		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log("onLoad")
@@ -60,10 +64,14 @@
 		},
 		onShow: function() {
 			console.log("onShow")
-			this.getOrderData();
+			this.resetPage();
 		},
 		setup() {
-			
+			const back=reactive({
+				title:"费用单",
+				backUrl:"/pages/tabBar/dashboard/dashboard",
+			})
+			const { s_id,r_g_id } = linkStore()
 			const orderData = ref([])
 			// "o_s_status":0 //订单状态  0所有费用单， 1未支付费用单 2已支付费用单
 			const page = ref({
@@ -79,32 +87,11 @@
 			
 			const getOrderData=()=>{
 				const params ={
-					"s_id": "10",
+					s_id,
 					...page.value,
 					...condition.value
 				}
-				// const res = {
-				// 	"data": [
-				// 	    {
-				// 	      "s_id": "10", //门店ID
-				// 	      "o_p_code": "202203021709365739557", //子订单编号
-				// 	      "c_create_time": "2022-03-02 17:09:35",//创建时间
-				// 	      "o_p_real_pay_money": "1500", //之际支付金额
-				// 	      "_id": "618a2727ea754a589dd291e2ed046784", //子订单ID
-				// 	      "cost_detail": [ //费用订单包含的费用
-				// 	        {
-				// 	          "cost_money": "1000",//费用金额
-				// 	          "cost_name": "提点管理费" //费用名称
-				// 	        },
-				// 			{
-				// 	          "cost_money": "500",//费用金额
-				// 	          "cost_name": "履约服务 " //费用名称
-				// 	        }
-				// 	      ],
-				// 	      "o_s_status": 1 //状态
-				// 	    }
-				// 	  ],
-				// }
+				
 				costList(params).then(res=>{
 					console.log(res);
 					const data = res.data.map(item=>{
@@ -133,7 +120,8 @@
 				tabOptions,
 				tabIndex,
 				page,
-				condition
+				condition,
+				back
 			}
 		},
 		methods: {
@@ -159,6 +147,12 @@
 			},
 			openPicker(){
 				this.$refs.datetimePicker.show()
+			},
+			resetPage(){
+				this.s_id = linkStore().s_id
+				this.page.pageNum = 1
+				this.orderData = []
+				this.getOrderData();
 			}
 		}
 	})
@@ -168,7 +162,7 @@
 	.order-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		// background-color: #f5f5f5;
 		// .uni-searchbar{

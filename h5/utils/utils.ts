@@ -1,5 +1,6 @@
 // 工具
-import { getStorageSync } from '@/utils/token'
+import { getStore } from "@/api/home"
+import { getStorageSync,setStorageSync,removeStorageSync } from '@/utils/token'
 // 获取路由参数
 export const getUrlParams = ()=>{
 	const url = location.href;
@@ -73,13 +74,38 @@ export const storeId = ()=>{
 	const my_store = JSON.parse(getStorageSync("my_store"))
 	// if(my_store) return my_store._id
 	if(my_store) return "10"
+	reLogin()
+}
+export const reLogin = ()=>{
 	uni.showToast({
 	    title: "登录状态已失效，请重新登录",
 	    duration: 2000,
 		icon:"none"
 	});
+	removeStorageSync("token")
 	uni.navigateTo({
 		url: '/pages/login/login'
 	})
+}
+export const getLinkStore = ()=>{
+	
+	return new Promise((resolve, reject) => {
+		getStore().then(res=>{
+			const {_id:s_id,a_id:r_g_id,store_name,store_code} = res.data
+			setStorageSync('linkStore',JSON.stringify({s_id,r_g_id,store_name,store_code}))
+			resolve({s_id,r_g_id,store_name,store_code})
+		},rej=>{
+			removeStorageSync('linkStore')
+			uni.navigateTo({
+				url: '/pages/tabBar/home/store'
+			})
+			reject(rej)
+		})
+	})
+}
+
+export const linkStore = ()=>{
+	const  linkStore = getStorageSync("linkStore")
+	return ( linkStore && JSON.parse(linkStore)) || {r_g_id:"-1",s_id:"-1"}
 }
 

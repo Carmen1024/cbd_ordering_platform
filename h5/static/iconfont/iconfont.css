@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3125514 */
-  src: url('iconfont.woff2?t=1645435925415') format('woff2'),
-       url('iconfont.woff?t=1645435925415') format('woff'),
-       url('iconfont.ttf?t=1645435925415') format('truetype');
+  src: url('iconfont.woff2?t=1647316067196') format('woff2'),
+       url('iconfont.woff?t=1647316067196') format('woff'),
+       url('iconfont.ttf?t=1647316067196') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-back:before {
+  content: "\e60e";
 }
 
 .icon-a-shoujihaoshouji:before {

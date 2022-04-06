@@ -3,7 +3,7 @@
 	<view class="user-container">
 		<view class="user-container-main">
 			<image class="logo" src="/static/logo.jpg"></image>
-			<code-mode :user="user" hasLogin="true" />
+			<code-mode :user="user" />
 			<view class="user-container-item">
 				<text>新密码</text>
 				<input class="uni-input" :password="passwordType" v-model="user.newpassword" placeholder="请输入密码" >
@@ -19,7 +19,6 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import codeMode from './components/code.vue'
 	import { resetPass } from '@/api/login'
-	import { getStorageSync } from '@/utils/token'
 	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		components:{
@@ -28,15 +27,15 @@
 		},
 		setup() {
 			const back=reactive({
-				title:"重置密码",
-				backUrl:"/pages/tabBar/home/setup",
+				title:"忘记密码",
+				backUrl:"/pages/login/login",
 			})
 			const sendDisable = ref(false)
 			const sentContent = ref("获取验证码")
 			const passwordType = ref(true)
 			const password=ref(true)
 			const user = ref({
-				phone:getStorageSync("userName"),
+				phone:"",
 				code:"",
 				newpassword:""
 			})

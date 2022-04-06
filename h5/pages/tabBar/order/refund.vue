@@ -60,6 +60,7 @@
 	import { subOrderDetail,orderRefund } from '@/api/order'
 	import { upload } from '@/api/upload'
 	import {uploadImg} from '@/utils/utils'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			// this.o_id = option.o_id;
@@ -67,6 +68,7 @@
 			this.getReceiveList();
 		},
 		setup() {
+			const { s_id,r_g_id } = linkStore()
 			const option = ref({})
 			const order = ref({})
 			const orderDetailData = ref({})
@@ -125,12 +127,12 @@
 			},
 			dataChange(item){
 				
-				let ret=/^\d+$/;
+				let ret=/^[1-9]\d*$/;
 				let errorTip=""
 				if(isNaN(parseInt(item.m_c_count))){
 					errorTip="请填入数字"
 				}else if(!item.m_c_count.match(ret)){
-					errorTip="数量必须大于等于0"
+					errorTip="数量必须为大于0的整数"
 				}else if(parseInt(item.m_c_count)>parseInt(item.o_m_count)){
 					errorTip="不能大于实际件数"
 				}
@@ -184,7 +186,7 @@
 	.shopping-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		.commodityMod{
 			height: calc(100% - 100rpx);

@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="transaction-container">
 		<view class="transactionItem">
 			<view class="msg">
@@ -6,7 +7,7 @@
 					<text>订单号：{{transactionData.tr_order_num}}</text>
 				</view>
 				<view class="detail">
-					<text>交易金额：{{transactionData.tr_tx_amt}}</text>
+					<text>交易金额：<span class="icon iconfont icon-jine"></span>{{(transactionData.tr_tx_amt / 100).toFixed(2)}}</text>
 				</view>
 				<view class="detail">
 					<text>付款人：{{transactionData.tr_payer_name}}</text>
@@ -31,12 +32,19 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { getStorageSync } from '@/utils/token'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
+		components:{
+			BackLayer
+		},
 		onShow: function() {
 			this.getTransactionData();
 		},
 		setup() {
-			
+			const back=reactive({
+				title:"账单详情",
+				backUrl:"/pages/transaction/transaction",
+			})
 			const transactionData = ref([])
 
 			const getTransactionData=()=>{
@@ -46,7 +54,8 @@
 			
 			return {
 				transactionData,
-				getTransactionData
+				getTransactionData,
+				back
 			}
 		},
 		methods: {
@@ -58,7 +67,7 @@
 <style lang="scss" scoped>
 	.transaction-container{
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow-x: hidden;
 		overflow-y: auto;
 		.transactionItem{

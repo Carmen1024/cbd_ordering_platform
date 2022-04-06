@@ -8,7 +8,8 @@
 				radius="20"
 				maxlength="30"
 				bgColor="#fff"
-				placeholder="请输入订单号查询">
+				placeholder="请输入订单号查询"
+			>
 			</uni-search-bar>
 			<text class="right">
 				<span class="icon iconfont icon-riqi" @click="showTime=showTime?false:true"></span>
@@ -17,10 +18,9 @@
 		<view class="timeMod" v-show="showTime">
 			<uni-datetime-picker
 				ref="datetimePicker"
-				v-model="datetimerange"
 				type="daterange"
-				start="2021-01-01"
-				end="2022-02-28"
+				:value="datetimerange"
+				:end="nowTime"
 				rangeSeparator="至"
 				clear-icon
 				@change="timeChange"
@@ -41,7 +41,7 @@
 					<!--  -->
 					<view @click="toOrderDetail(item)">
 						<view class="title">
-							<text class="left">{{item.o_p_code}}</text>
+							<text class="left">订单号：{{item.o_p_code}}</text>
 							<view class="right">
 								<text>{{item.o_s_status_desc}}</text>
 							</view>
@@ -52,7 +52,7 @@
 								<view class="left"><text>{{item.c_create_time}}</text></view>
 								<view class="right">
 									<text>共计：{{item.s_o_m_num}}件,</text>
-									<text class="price">{{item.o_s_status==1?'需付款':'实付款'}}：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
+									<text class="price">{{item.o_s_status==1?'需付款':'实付款'}}：<span class="icon iconfont icon-jine"></span>{{(item.o_p_real_pay_money / 100).toFixed(2)}}</text>
 								</view>
 							</view>
 						</view>
@@ -75,6 +75,8 @@
 	import { statusData,tabOptions } from './enum'
 	import OButton from "./components/oButton.vue"
 	import OMaterial from "./components/oMaterial.vue"
+	import { linkStore } from '@/utils/utils'
+	import { timeFormat } from '@/utils/utils'
 	export default defineComponent({
 		components:{
 			OButton,
@@ -92,8 +94,9 @@
 			this.resetPage();
 		},
 		setup() {
-			
 			const orderData = ref([])
+		
+			// const s_id = ref(linkStore().s_id)
 			
 			const page = ref({
 				"pageSize":20,
@@ -103,17 +106,18 @@
 				o_p_code:"",
 				c_create_start_time:"",
 				c_create_end_time:"",
-				// o_s_status:[1,2,3,4,5,6,7,8,9,10,11]
 			})
 			
 			const loading = ref(true)
 			const tabIndex = ref(1)
-			const datetimerange = ref(["2021-03-20", "2021-05-10"])
+			const datetimerange = ref([])
+			const nowTime = timeFormat(new Date(),"yyyy-MM-dd")
 			const showTime = ref(false)
 			
 			const getOrderData=()=>{
+				const s_id = linkStore().s_id
 				const params ={
-					"s_id": "10",
+					s_id,
 					...page.value,
 					...condition.value
 				}
@@ -128,6 +132,7 @@
 					orderData.value = page.value.pageNum==1 ? data : [...orderData.value,...data]
 					
 					page.value.pageNum++;
+					console.log("s_id：",s_id)
 				})
 			}
 			
@@ -136,7 +141,6 @@
 				    url: '/pages/tabBar/order/detail?_id='+item._id
 				})
 			}
-			
 			return {
 				orderData,
 				toOrderDetail,
@@ -146,8 +150,9 @@
 				tabIndex,
 				page,
 				datetimerange,
+				nowTime,
 				showTime,
-				condition
+				condition,
 			}
 		},
 		methods: {
@@ -204,6 +209,7 @@
 				this.condition.o_p_code = ""
 				this.condition.c_create_start_time = ""
 				this.condition.c_create_end_time = ""
+				
 				this.getOrderData();
 			}
 		}

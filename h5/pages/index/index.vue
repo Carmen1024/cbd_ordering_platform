@@ -16,12 +16,16 @@
 <script lang="ts">
 	import { defineComponent, ref, reactive } from 'vue'
 	import { getStorageSync } from '@/utils/token'
+	import { linkStore } from '@/utils/utils'
+	import { useStore } from 'vuex'
 	export default defineComponent({
 		setup() {
+			const store = useStore()
 			const title = '茶茶订货'
 			const tip="让订货更轻松，让库存理精准"
 			const loading = ref(true)
 			const time = ref(5)
+			
 			const setTime=()=>{
 				if(time.value>=1){
 					setTimeout(()=>{
@@ -36,8 +40,9 @@
 			const toPages=()=>{
 				loading.value = false
 				if(getStorageSync('token')){
+					const { s_id } = linkStore()
 					uni.switchTab({
-					    url: '/pages/tabBar/dashboard/dashboard'
+						url: store.state.frontPage
 					});
 				}else{
 					uni.navigateTo({

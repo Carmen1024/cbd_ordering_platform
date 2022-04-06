@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="shopping-container">
 		<view class="commodityMod">
 			<view class="commodityItem" v-for="(item,index) in materialList">
@@ -46,14 +47,21 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { receiveList,receiveMaterials } from '@/api/order'
 	import { typeOptions,detailTypeOptions,orderTypeOptions } from './enum'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
+		components:{
+			BackLayer
+		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log(option.o_s_id); //打印出上个页面传递的参数。
 			// this.o_id = option.o_id;
 			this.getReceiveList(option.o_s_id);
 		},
 		setup() {
-			
+			const back=reactive({
+				title:"发货单",
+				backUrl:"/pages/tabBar/order/order",
+			})
 			const materialList = ref([])
 			const getReceiveList=(o_s_id)=>{
 				receiveList({ o_s_id }).then(res=>{
@@ -72,7 +80,8 @@
 			
 			return {
 				getReceiveList,
-				materialList
+				materialList,
+				back
 			}
 		},
 		methods: {
@@ -92,7 +101,7 @@
 	.shopping-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		.commodityMod{
 			width: 100%;

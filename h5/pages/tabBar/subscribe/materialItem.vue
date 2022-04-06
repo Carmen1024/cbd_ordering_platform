@@ -1,5 +1,5 @@
 <template>
-	<view class="materialItem" v-for="(item,index) in materialData">
+	<view class="materialItem" v-for="(item,index) in materialDatas" @click="toMaterial(item)">
 		<view v-if="item.isFirst" class="classify" :id="`classify_${item.classifyId}`">
 			{{item.classifyName}}
 		</view>
@@ -12,9 +12,9 @@
 					<text class="right">
 						<span class="icon iconfont icon-jine"></span>
 						<text v-if="item.m_prices">
-							{{item.m_prices[0].m_p_money}}/箱
+							{{item.m_price}}
 						</text>
-						<text v-else>0/箱</text>
+						<text v-else>0.00</text>
 					</text>
 				</view>
 				<view class="price">
@@ -25,7 +25,9 @@
 						<span v-show="item.num>0" class="icon iconfont icon-jian" @click="jian(item)"></span>
 						<view class="numHandle" @click="jia(item)">
 							<span class="icon iconfont icon-goumai"></span>
-							<text v-if="item.num && item.num>0">{{item.num}}</text>
+							<text v-if="item.num && item.num>0" :class="item.num>=100 ? 'bigNum' : ''">
+								{{item.num>=100 ? '99+':item.num}}
+							</text>
 						</view>
 
 					</view>
@@ -38,7 +40,8 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { cartCountAndPrice,cartInsert,cartList,cartDel,cartDelByM } from '@/api/subscribe'
-	import { storeId } from '@/utils/utils'
+	import { linkStore } from '@/utils/utils'
+	import { setStorageSync } from "@/utils/token"
 	export default defineComponent({
 		props:{
 			materialData : {
@@ -48,10 +51,18 @@
 				}
 			},
 		},
+		computed:{
+			materialDatas(){
+				return this.materialData.map(item=>{
+					const num = item.m_prices ? item.m_prices[0].m_p_money : 0
+					console.log(num)
+					item.m_price = (num / 100).toFixed(2)
+					return item
+				})
+			}
+		},
 		setup(props) {
-			const s_id = storeId()
 			return {
-				s_id
 			}
 		},
 		methods:{
@@ -76,7 +87,7 @@
 					"m_id":item._id,
 				    "m_c_count":1,
 				    "m_c_unit":1,
-				    "s_id":this.s_id
+				    "s_id":linkStore().s_id
 				}
 				this.$emit("jiaReaction",params)
 			},
@@ -110,14 +121,14 @@
 					"m_id":item._id,
 				    "m_c_count":-1,
 				    "m_c_unit":1,
-				    "s_id":this.s_id
+				    "s_id":linkStore().s_id
 				}
 				this.$emit("jiaReaction",params)
 			},
 			deleteByM(item){
 				const _this = this;
 				const params = {
-					"s_id":"10",
+					"s_id":linkStore().s_id,
 					"m_id":item._id
 				}
 				cartDelByM(params).then(res=>{
@@ -136,7 +147,13 @@
 					_this.$emit("jianReaction")
 				})
 			},
-			
+			toMaterial(item){
+				// item.backUrl = "/pages/tabBar/subscribe/subscribe"
+				// setStorageSync("material",item)
+				// uni.navigateTo({
+				//     url: '/pages/material/material'
+				// });
+			}
 		}
 	})
 </script>
@@ -173,6 +190,9 @@
 				.name{
 					font-weight: bold;
 					height: 50rpx;
+					white-space:nowrap;
+					overflow:hidden;
+					text-overflow:ellipsis;
 				}
 				.unit{
 					width: 100%;
@@ -216,6 +236,9 @@
 								border-radius: 50%;
 								color:#fff;
 								background-color: #fc758e;
+							}
+							.bigNum{
+								font-size: 12rpx;
 							}
 						}
 					

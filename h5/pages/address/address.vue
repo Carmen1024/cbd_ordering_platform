@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="address-container">
 		<view  class="addressList" v-if="addressList.length>0">
 			<view class="addressItem" v-for="(item,index) in addressList">
@@ -39,16 +40,24 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { addressQuery } from '@/api/home'
 	import { setStorageSync } from '@/utils/token'
-
+	import { linkStore } from '@/utils/utils'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
+		components:{
+			BackLayer
+		},
 		onShow:function(e){
 			this.getAddressList()
 		},
 		setup() {
-			
+			const back=reactive({
+				title:"收货地址",
+				backUrl:'/pages/tabBar/home/home',
+			})
+			const { s_id,r_g_id } = linkStore()
 			const addressList = ref([])
 			const getAddressList = ()=>{
-				const params={"s_id":"10"}
+				const params={s_id}
 				addressQuery(params).then(res=>{
 					addressList.value = res.data
 				})
@@ -56,7 +65,8 @@
 			
 			return {
 				addressList,
-				getAddressList
+				getAddressList,
+				back
 			}
 		},
 		methods: {

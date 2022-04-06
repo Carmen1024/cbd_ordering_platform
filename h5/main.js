@@ -1,6 +1,6 @@
 import App from './App'
 import store from './store'
-// import { storeId } from '@/utils/utils'
+// import { linkStore } from '@/utils/utils'
 
 // #ifndef VUE3
 import Vue from 'vue'

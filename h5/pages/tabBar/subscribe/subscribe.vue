@@ -3,7 +3,7 @@
 		<view class="shopping-container-title">
 			<view class="left">
 				<image class="logo" src="/static/logo.jpg"></image>
-				<text>茶百道双楠店</text>
+				<text>{{my_store.store_name}}</text>
 			</view>
 			<view class="right" @click="toSearch">
 				<span class="icon iconfont icon-sousuo"></span>搜索
@@ -19,6 +19,7 @@
 				</view>
 			</view>
 			<scroll-view ref="materialMod" class="right scroll-Y materialList"
+				:scroll-top="scrollTop"
 				scroll-y="true" lower-threshold="50"
 				:scroll-into-view="classifyDomId"
 				@scrolltolower="lower" @scroll="scroll">
@@ -37,7 +38,7 @@
 	import reaction from './reaction'
 	import materialItem from './materialItem'
 	import { classifyQuery,materialQuery,cartCountAndPrice,cartInsert,cartList,cartDel } from '@/api/subscribe'
-	import { storeId } from '@/utils/utils'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
 		components:{
 			cart,
@@ -45,19 +46,16 @@
 			materialItem
 		},
 		onShow: function() {
+			this.my_store = linkStore()
 			this.getCartCountAndPrice();
 			this.getCartList();
 		},
-		// computed: {
-		//     storeId() {
-		//        return this.$store.state.actions.storeId
-		//     }
-		// },
 		setup() {
+			
+			const my_store = ref(linkStore())
 			const classifyData = ref([])
 			const materialData = ref([])
 			const countAndPrice = ref({})
-			const s_id = storeId()
 			const page = {
 				"pageSize":20,
 				"pageNum":1
@@ -90,9 +88,8 @@
 			}
 			//获取购物车的数量
 			const cartMaterialList = ref([])
-			const getCartList=()=>{
-				cartMaterialList.value = []
-				cartList({s_id}).then(res=>{
+			const getCartList = ()=>{
+				cartList({s_id:linkStore().s_id}).then(res=>{
 					cartMaterialList.value = res.data || []
 					scrollClassifyIndex.value = 0
 					scrollTop.value = 0
@@ -116,8 +113,8 @@
 			getClassifyQuery();
 			const getMaterialQuery=()=>{
 				const params = {
-					r_g_id:"10",
-					s_id,
+					r_g_id:linkStore().r_g_id,
+					s_id:linkStore().s_id,
 					...page
 				}
 				materialQuery(params).then(res=>{
@@ -143,7 +140,7 @@
 				materials:[]
 			})
 			const getCartCountAndPrice=()=>{
-				cartCountAndPrice({ s_id }).then(res=>{
+				cartCountAndPrice({ s_id:linkStore().s_id }).then(res=>{
 					countAndPrice.value = res.data;
 				})
 			}
@@ -158,7 +155,6 @@
 			}
 						
 			return {
-				s_id,
 				classifyData,
 				materialData,
 				scrollClassifyIndex,
@@ -173,7 +169,8 @@
 				classifyDomId,
 				topList,
 				setTopList,
-				getCartList
+				getCartList,
+				my_store,
 			}
 		},
 		methods: {
@@ -187,13 +184,12 @@
 					this.classifyDomId = classifyDomId
 				}else{
 					const lastM = this.materialData[this.materialData.length-1]
-					const lastMId = lastM._id
+					const lastMId = lastM?._id || ''
 					const params = {
-						r_g_id:"10",
-						s_id,
+						r_g_id:linkStore().r_g_id,
+						s_id:linkStore().s_id,
 						classifyId,lastMId,pageSize:this.page.pageSize,
 					}
-					
 					materialQuery(params).then(res=>{
 						const data = res.data.map(item=>{
 							item.num = 0
@@ -254,7 +250,7 @@
 	.shopping-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		&-title{
 			width: calc(100% - 40rpx);
@@ -263,7 +259,7 @@
 			line-height: 60rpx;
 			border-bottom: solid 1px rgba(0, 0, 0, .1);
 			.left{
-				font-size: 38rpx;
+				// font-size: 38rpx;
 				font-weight: bold;
 				display: flex;
 				align-items: center;

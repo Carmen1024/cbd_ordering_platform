@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="home-container">
 		<view class="information">
 			<view class="personalInformation">
@@ -12,14 +13,14 @@
 			</view>
 		</view>
 		<view class="account">
-			<view class="account-item">
+<!-- 			<view class="account-item">
 				<navigator :url="'/pages/address/address'">
 					<text class="left">我的收货地址</text>
 					<text class="right">
 						管理我的地址<span class="icon iconfont icon-dituguanli"></span>
 					</text>
 				</navigator>
-			</view>
+			</view> -->
 			<view class="account-item">
 				<text class="left">手机号</text>
 				<text class="right" @click="call">
@@ -42,11 +43,21 @@
 	import { getStorageSync,removeStorageSync } from '@/utils/token'
 	import { mineQuery } from "@/api/home"
 	import { logout } from '@/api/login'
+	import { linkStore } from '@/utils/utils'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
+		components:{
+			BackLayer
+		},
 		onShow: function() {
 			this.getMineQuery();
 		},
 		setup() {
+			const back=reactive({
+				title:"设置",
+				backUrl:"/pages/tabBar/home/home",
+			})
+			const { s_id,r_g_id } = linkStore()
 			const userName = ref("")
 			const mine = ref({})
 			const descData = ref([
@@ -56,7 +67,6 @@
 			userName.value = getStorageSync("userName") || "张三"
 			
 			const getMineQuery = ()=>{
-				const s_id = getStorageSync("s_id")
 				const token = getStorageSync("token")
 				mineQuery({ s_id,token }).then(res=>{
 					mine.value = res.data
@@ -83,7 +93,8 @@
 				mine,
 				getMineQuery,
 				out,
-				call
+				call,
+				back
 			}
 		}
 	})

@@ -21,9 +21,9 @@
 		</view>
 		<view class="commodityMod">
 			<checkbox-group @change="checkboxChange" class="commodityList">
-				<view class="commodityItem" v-for="(item,index) in cartMaterialList">
+				<view class="commodityItem" v-for="(item,index) in commodityData">
 					<checkbox 
-						:checked="item.checked" 
+						:checked="item.checked && item.m_stock > item.m_c_count" 
 						:value="item.m_id" 
 						:disabled="item.m_stock < item.m_c_count ? true : false" 
 					/>
@@ -38,13 +38,18 @@
 							<text class="total">
 								<span class="icon iconfont icon-jine"></span>
 								<text v-if="item.m_prices">
-									{{item.m_prices[0].m_p_money}}
+									{{item.m_price}}
 								</text>
 								<text v-else>0</text>
 							</text>
 							<view class="numHandle">
 								<text @click="jian(item)"><span class="icon iconfont icon-jian"></span></text>
-								<input class="uni-input" type="number" v-model="item.m_c_count" @blur="dataChange(item)" auto-blur=true />
+								<input class="uni-input" type="number" 
+									v-model="item.m_c_count" 
+									@blur="dataChange(item)" 
+									@input="dataInput(item)"
+									auto-blur=true 
+								/>
 								<text @click="jia(item)"><span class="icon iconfont icon-tianjia"></span></text>
 							</view>
 						</view>
@@ -81,7 +86,7 @@
 				<view v-if="operateType==1">
 					<text class="chosenTotal" v-if="chosenCountPrice.total>0">已选{{chosenCountPrice.total}}件，</text>
 					<text>总计:</text>
-					<text class="chosenPrice"><span class="icon iconfont icon-jine"></span>{{chosenCountPrice.price}}</text>
+					<text class="chosenPrice"><span class="icon iconfont icon-jine"></span>{{chosenCountPrice.price.toFixed(2)}}</text>
 					<button type="primary" size="mini" @click="submit">结算</button>
 				</view>
 				<view v-if="operateType==2">
@@ -98,13 +103,25 @@
 	import { cartCountAndPrice,cartInsert,cartMaterialsUpdate,cartList,cartDel } from '@/api/subscribe'
 	import { operateData } from './enum'
 	import { setStorageSync } from '@/utils/token'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
 		onShow: function() {
 			uni.hideToast();
 			this.resetShoppingCart();
 		},
+		computed:{
+			commodityData(){
+				return this.cartMaterialList.map(item=>{
+					const num = item.m_prices ? item.m_prices[0].m_p_money : 0
+					console.log(num)
+					item.m_price = (num / 100).toFixed(2)
+					return item
+				})
+			}
+		},
 		setup() {
 			
+			let { s_id,r_g_id } = linkStore()
 			const operateType = ref(1)
 			const countAndPrice = ref({})
 			const cartMaterialList = ref([])
@@ -125,14 +142,14 @@
 			}
 			
 			const getCartCountAndPrice=()=>{
-				cartCountAndPrice({"s_id": "10"}).then(res=>{
+				cartCountAndPrice({ s_id }).then(res=>{
 					countAndPrice.value = res.data;
 				})
 			}
 			const getCartList=()=>{
 				stockZeroList.value = []
 				cartMaterialList.value = []
-				cartList({"s_id": "10"}).then(res=>{
+				cartList({ s_id }).then(res=>{
 					res.data.map(item=>{
 						item.old_count = item.m_c_count
 					});
@@ -159,10 +176,11 @@
 				
 				let items = cartMaterialList.value,price=0,total=0;
 				items.map(item=>{
-					if(item.checked){
-						total += (item.m_c_count || 0)
-						const p = item.m_prices ? item.m_prices[0].m_p_money : 0
-						price += item.m_c_count * p
+					if(item.checked && item.m_stock > item.m_c_count){
+						const m_c_count = parseInt(item.m_c_count)
+						total += (m_c_count || 0)
+						const p = item.m_price || 0
+						price += m_c_count * p
 					}
 				})
 				
@@ -184,6 +202,8 @@
 			}
 			//重新设置购物车
 			const resetShoppingCart =()=>{
+				s_id = linkStore().s_id
+				r_g_id = linkStore().r_g_id
 				getCartList()
 				butFreshList();
 			}
@@ -209,7 +229,9 @@
 				setCbChecked,
 				resetShoppingCart,
 				butFreshList,
-				cbCheckDisabled
+				cbCheckDisabled,
+				s_id,
+				r_g_id
 			}
 		},
 		methods: {
@@ -240,6 +262,10 @@
 					this.$set(item,'checked',this.cbChecked)
 				})
 			},
+			dataInput(item){
+				this.setChosenCountPrice()
+				this.setCbChecked()
+			},
 			dataChange(item){
 				
 				let ret=/^([1-9]+[0-9]*)$/;
@@ -253,19 +279,23 @@
 				}
 				if(errorTip){
 					item.m_c_count = item.old_count
+					// item.checked = false
 					uni.showToast({
 					    title: errorTip,
 					    duration: 2000,
 						icon:"none"
 					});
+					this.setChosenCountPrice()
+					this.setCbChecked()
 					return
 				}
 				const m_c_count = parseInt(item.m_c_count)
 				item.m_c_count = m_c_count
+				item.old_count = m_c_count
 				
 				const params={
 					"_id": item._id,
-					"s_id": "10",
+					"s_id":this.s_id,
 					"m_c_count": m_c_count,
 					"m_id": item.m_id
 				}
@@ -284,7 +314,7 @@
 					"m_id":item.m_id,
 				    "m_c_count":-1,
 				    "m_c_unit":1,
-				    "s_id":"10"
+				    "s_id":this.s_id
 				}
 				this.toCartInsert(params)
 				
@@ -317,7 +347,7 @@
 					"m_id":item.m_id,
 				    "m_c_count":1,
 				    "m_c_unit":1,
-				    "s_id":"10"
+				    "s_id":this.s_id
 				}
 				this.toCartInsert(params)
 			},
@@ -397,7 +427,7 @@
 	.shopping-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		.title{
 			width: calc(100% - 40rpx);
@@ -430,7 +460,7 @@
 					height: 50rpx;
 					line-height: 50rpx;
 					text-align: center;
-					font-size: 30rpx;
+					// font-size: 30rpx;
 					color:#fff;
 				}
 			}
@@ -563,7 +593,7 @@
 					justify-content: flex-end;
 					align-items: center;
 					align-self:center;
-					font-size: 18rpx;
+					// font-size: 18rpx;
 					height: 100rpx;
 					line-height: 100rpx;
 					.chosenTotal{
@@ -571,12 +601,12 @@
 					}
 					.chosenPrice{
 						font-weight: bold;
-						font-size: 26rpx;
+						// font-size: 26rpx;
 						display: flex;
 						align-items: center;
-						.iconfont{
-							font-size: 18rpx;
-						}
+						// .iconfont{
+						// 	font-size: 18rpx;
+						// }
 					}
 					button{
 						margin: 20rpx 20rpx;

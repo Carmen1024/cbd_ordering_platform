@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="shopping-container">
 		<view class="commodityMod">
 			<view class="other">
@@ -45,15 +46,24 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { receiveDetail,receiveMaterials } from '@/api/order'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
+		components:{
+			BackLayer
+		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log(option.o_s_id); //打印出上个页面传递的参数。
 			// this.o_id = option.o_id;
 			this.order = option
+			this.back.backUrl = "/pages/receive/list?o_s_id="+option.o_s_id
 			this.getReceiveList();
 		},
 		setup() {
 			const order = ref({})
+			const back=reactive({
+				title:"发货单详情",
+				backUrl:"/pages/receive/list?o_s_id=",
+			})
 			const detailData = ref({})
 			const m_count = ref(0)
 			const m_c_count = ref(0)
@@ -77,7 +87,8 @@
 				detailData,
 				order,
 				m_c_count,
-				m_count
+				m_count,
+				back
 			}
 		},
 		methods: {
@@ -107,7 +118,7 @@
 				if(isNaN(parseInt(item.m_c_count))){
 					errorTip="请填入数字"
 				}else if(!item.m_c_count.match(ret)){
-					errorTip="数量必须大于等于0"
+					errorTip="数量必须为大于等于0的整数"
 				}else if(parseInt(item.m_c_count)>parseInt(item.m_count)){
 					errorTip="不能大于实际发货件数"
 				}
@@ -135,7 +146,7 @@
 	.shopping-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		.commodityMod{
 			height: calc(100% - 100rpx);
@@ -221,6 +232,7 @@
 						}
 						.numHandle{
 							float: right;
+							display: flex;
 							.uni-input{
 								padding:5rpx;
 								width:120rpx;

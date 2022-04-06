@@ -1,7 +1,7 @@
 <template>
 	<view class="user-container-item">
 		<text>手机号</text>
-		<input class="uni-input" v-model="user.phone" placeholder="请输入手机号" />
+		<input :disabled="hasLogin" class="uni-input" v-model="user.phone" placeholder="请输入手机号" />
 	</view>
 	<view class="user-container-item">
 		<text>验证码</text>
@@ -22,7 +22,13 @@
 				default() {
 					return {}
 				}
-			}
+			},
+			hasLogin : {
+				type : Boolean,
+				default() {
+					return false
+				}
+			},
 		},
 		setup(props) {
 			const sendDisable = ref(false)

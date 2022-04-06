@@ -6,7 +6,7 @@
 				<view class="name">{{material.o_m_name || '物料名称'}}</view>
 				<view class="price">
 					<text class="total">
-						<span class="icon iconfont icon-jine"></span>{{material.o_m_price}}
+						<span class="icon iconfont icon-jine"></span>{{(material.o_m_price / 100).toFixed(2)}}
 					</text>
 					<view class="numHandle">
 						<text>x{{material.o_m_count}}</text>

@@ -1,6 +1,7 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="order-container">
-		<o-peisong :order="orderDetailData" />
+		<!-- <o-peisong :order="orderDetailData" /> -->
 		<view class="materialList">
 			<view class="materialItem" v-for="(item,index) in orderDetailData.sub_order_materials">
 				<image :src="item.o_m_pic || '/static/logo.jpg'"></image>
@@ -10,7 +11,7 @@
 					<view class="price">
 						<text class="total">
 							<span class="icon iconfont icon-jine"></span>
-							{{item.o_m_price}}
+							{{(item.o_m_price / 100).toFixed(2)}}
 						</text>
 						<view class="numHandle">
 							<text>{{item.o_m_count}}</text>
@@ -25,7 +26,7 @@
 				<text class="left">商品总价</text>
 				<view class="right" >
 					<span class="icon iconfont icon-jine"></span>
-					{{orderDetailData.o_p_origin_money || 0}}
+					{{(orderDetailData.o_p_origin_money / 100).toFixed(2) || 0}}
 				</view>
 			</view>
 			<view class="other-item">
@@ -35,19 +36,19 @@
 					{{orderDetailData.o_p_freight_money || 0}}
 				</text>
 			</view>
-			<view class="other-item">
+			<view class="other-item" v-if="orderDetailData.o_p_discount_money!=0">
 				<text class="left">合计优惠</text>
 				<text class="right color-primary">
 					<span class="icon iconfont icon-jian"></span>
 					<span class="icon iconfont icon-jine"></span>
-					{{Math.abs(orderDetailData.o_p_discount_money) || 0}}
+					{{Math.abs((orderDetailData.o_p_discount_money / 100).toFixed(2)) || 0}}
 				</text>
 			</view>
 			<view class="other-item">
 				<text class="left">实付款</text>
 				<view class="right color-primary fontBold" >
 					<span class="icon iconfont icon-jine"></span>
-					{{orderDetailData.o_p_real_pay_money || 0}}
+					{{(orderDetailData.o_p_real_pay_money / 100).toFixed(2) || 0}}
 				</view>
 			</view>
 		</view>
@@ -122,10 +123,12 @@
 	import { toPay,toThirdPartAPI } from '@/api/pay'
 	import OButton from "./components/oButton.vue"
 	import OPeisong from "./components/oPeisong.vue"
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		components:{
 			OButton,
-			OPeisong
+			OPeisong,
+			BackLayer
 		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log(option._id); //打印出上个页面传递的参数。
@@ -133,16 +136,14 @@
 			this.option = option
 			this.getOrderDetail();
 		},
-		onBackPress(e){
-			console.log("监听返回按钮事件",e);
-			//返回主页面tabBar
-			uni.switchTab({
-				url:"/pages/tabBar/order/order"
-			})
-			// 此处一定姚要return为true，否则页面不会返回到指定路径
-			return true;
-		},
 		setup() {
+			const back=reactive({
+				title:"订单详情",
+				backUrl:"/pages/tabBar/order/order",
+				homeUrl:"/pages/tabBar/dashboard/dashboard",
+				homeText:"",
+				homeIconClass:""
+			})
 			const option = ref({})
 			const orderDetailData = ref({})
 			const getOrderDetail=()=>{
@@ -165,7 +166,8 @@
 				getOrderDetail,
 				orderDetailData,
 				copyC,
-				option
+				option,
+				back
 			}
 		},
 		methods:{

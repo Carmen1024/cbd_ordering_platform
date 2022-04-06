@@ -16,10 +16,9 @@
 		<view class="timeMod" v-show="showTime">
 			<uni-datetime-picker
 				ref="datetimePicker"
-				v-model="datetimerange"
 				type="daterange"
-				start="2021-01-01"
-				end="2022-02-28"
+				:value="datetimerange"
+				:end="nowTime"
 				rangeSeparator="至"
 				clear-icon
 				@change="timeChange"
@@ -34,7 +33,7 @@
 				<view class="orderItem" @click="toOrderDetail(item)">
 					<!--  -->
 					<view class="title">
-						<text class="left">{{item.o_p_code}}</text>
+						<text class="left">订单号：{{item.o_p_code}}</text>
 						<view class="right">
 							<text>{{item.o_s_status_desc}}</text>
 							<!-- <text>{{item.o_s_status_desc}}</text> -->
@@ -82,9 +81,9 @@
 								<text class="price">实付款：<span class="icon iconfont icon-jine"></span>{{item.o_p_real_pay_money}}</text>
 							</view>
 						</view>
-						<view class="numHandle">
+<!-- 						<view class="numHandle">
 							<button size="mini">再次购买</button>
-						</view>
+						</view> -->
 					</view>
 				</view>
 			</view>
@@ -101,6 +100,8 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { orderList } from '@/api/order'
 	import { statusData } from './enum'
+	import { linkStore } from '@/utils/utils'
+	import { timeFormat } from '@/utils/utils'
 	export default defineComponent({
 		onShow: function() {
 			console.log("onShow")
@@ -109,6 +110,7 @@
 		setup() {
 			
 			const orderData = ref([])
+			const { s_id,r_g_id } = linkStore()
 			
 			const page = ref({
 				"pageSize":20,
@@ -122,12 +124,13 @@
 			})
 			
 			const loading = ref(true)
-			const datetimerange = ref(["2021-03-20", "2021-05-10"])
+			const datetimerange = ref([])
+			const nowTime = timeFormat(new Date(),"yyyy-MM-dd")
 			const showTime = ref(false)
 			
 			const getOrderData=()=>{
 				const params ={
-					"s_id": "10",
+					s_id,
 					...page.value,
 					...condition.value
 				}
@@ -158,6 +161,7 @@
 				loading,
 				page,
 				datetimerange,
+				nowTime,
 				showTime,
 				condition
 			}
@@ -202,7 +206,7 @@
 	.order-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		overflow: hidden;
 		background-color: #fff;
 		// .uni-searchbar{

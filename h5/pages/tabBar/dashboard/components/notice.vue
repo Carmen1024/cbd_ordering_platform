@@ -16,11 +16,15 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent } from "vue"
+	import { defineComponent,ref } from "vue"
 	import { getStorageSync } from '@/utils/token'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
+		onShow() {
+			this.my_store = linkStore()
+		},
 		setup() {
-			const my_store = JSON.parse(getStorageSync("my_store"))
+			let my_store = ref({})
 			const toNoticePage=(item)=>{
 				uni.navigateTo({
 				    url: '/pages/notice/notice'
@@ -53,7 +57,7 @@
 			}
 		}
 		.main{
-			margin:20rpx;
+			margin:0 20rpx 20rpx 20rpx;
 			padding:20rpx;
 			height: 60rpx;
 			line-height: 60rpx;

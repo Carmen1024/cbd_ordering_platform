@@ -22,9 +22,9 @@
 				},
 				current: 0,
 				indexPage: [{
-					tabBar: '/pages/tabBar/dashboard/dashboard',
-					index: '/pages/tabBar/dashboard/dashboard'
-				}, {
+				// 	tabBar: '/pages/tabBar/dashboard/dashboard',
+				// 	index: '/pages/tabBar/dashboard/dashboard'
+				// }, {
 					tabBar: '/pages/tabBar/subscribe/subscribe',
 					index: '/pages/tabBar/subscribe/subscribe'
 				}, {

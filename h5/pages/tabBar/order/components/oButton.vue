@@ -1,7 +1,10 @@
 <template>
 	<view class="button-container">
-		<view v-show="[0,3,4,5].includes(order.o_s_status)">
+<!-- 		<view v-show="[0,3,4,5].includes(order.o_s_status)">
 			<button size="mini" @click="reBuy">再次购买</button>
+		</view> -->
+		<view v-show="[0].includes(order.o_s_status)">
+			<button size="mini" @click="reBuy">确认</button>
 		</view>
 		<view v-show="[1,2].includes(order.o_s_status)">
 			<button class="uni-button" size="mini" @click="cancel">取消订单</button>
@@ -59,7 +62,9 @@
 			},
 			 // 重新购买
 			 reBuy(){
-				 
+				 uni.switchTab({
+				     url: '/pages/tabBar/order/order'
+				 })
 			 },
 			 // 取消订单
 			 cancel(){

@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="order-container">
 		<view class="orderData">
 				<!--  -->
@@ -26,7 +27,7 @@
 			</view>
 		</view>
 		<view class="account">
-			<text>共计：<span class="icon iconfont icon-jine"></span>{{orderDetailData.o_p_real_pay_money}}</text>
+			<text>共计：<span class="icon iconfont icon-jine"></span>{{(orderDetailData.o_p_real_pay_money /100).toFixed(2) || 0}}</text>
 			<o-button :order="orderDetailData" />
 		</view>
 	</view>
@@ -38,40 +39,27 @@
 	import { statusData,tabOptions } from './enum'
 	import OButton from "./components/oButton.vue"
 	import OBill from "./components/oBill.vue"
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		components:{
 			OButton,
-			OBill
+			OBill,
+			BackLayer
 		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			this.o_s_id = option.o_s_id;
 			this.getOrderDetail(option.o_s_id);
 		},
 		setup() {
+			const back=reactive({
+				title:"费用单详情",
+				backUrl:"/pages/feeBill/feeBill",
+			})
 			// const o_id = ""
 			const o_s_id = ref("")
 			const orderDetailData = ref({})
 			const getOrderDetail=(o_s_id)=>{
-				// const res = {
-				// 	"data":{
-				// 		  "s_id": "10", //门店ID
-				// 		  "o_p_code": "202203021709365739557", //子订单编号
-				// 		  "c_create_time": "2022-03-02 17:09:35",//创建时间
-				// 		  "o_p_real_pay_money": "1500", //之际支付金额
-				// 		  "_id": "618a2727ea754a589dd291e2ed046784", //子订单ID
-				// 		  "cost_detail": [ //费用订单包含的费用
-				// 			{
-				// 			  "cost_money": "1000",//费用金额
-				// 			  "cost_name": "提点管理费" //费用名称
-				// 			},
-				// 			{
-				// 			  "cost_money": "500",//费用金额
-				// 			  "cost_name": "履约服务 " //费用名称
-				// 			}
-				// 		  ],
-				// 		  "o_s_status": 1 //状态
-				// 	}
-				// }
+				
 				costDetail({o_s_id}).then(res=>{
 					const select = statusData.find(select => select.value === res.data.o_s_status)
 					res.data.o_s_status_desc = select ?  select.label : res.data.o_s_status
@@ -82,7 +70,8 @@
 			return {
 				getOrderDetail,
 				orderDetailData,
-				o_s_id
+				o_s_id,
+				back
 			}
 		},
 		methods:{

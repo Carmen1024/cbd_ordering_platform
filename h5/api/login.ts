@@ -11,7 +11,7 @@ export function mineQuery(data: object) {
 
 export function login(data: object) {
   return request({
-    url: '/g/login/login_with_biz',
+    url: '/g/login/login_with_store', //login/login_with_biz
     method: 'post',
     data
   })

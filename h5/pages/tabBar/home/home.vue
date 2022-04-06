@@ -7,12 +7,12 @@
 				<view class="user">
 					<image class="logo" src="/static/logo.jpg"></image>
 					<view>
-						<view class="username">{{userName}}</view>
+						<view class="username">{{mine.userName}}</view>
 						<!-- <view class="userid">id:12121212</view> -->
 					</view>
 				</view>
 				<view class="store">
-					<text>{{mine.store_address}}</text>
+					<text>{{mine.store_name}}</text>
 					<navigator :url="'/pages/tabBar/home/store'">
 						<button type="primary" size="mini">
 							切换门店
@@ -24,9 +24,18 @@
 		<view class="account">
 			<view class="account-item">
 				<navigator :url="'/pages/address/address'">
-					<text class="left">我的收货地址</text>
+					<text class="left">收货地址</text>
 					<text class="right">
 						管理我的地址<span class="icon iconfont icon-right"></span>
+					</text>
+				</navigator>
+			</view>
+			<!-- /pages/transaction/transaction -->
+			<view class="account-item">
+				<navigator :url="'/pages/transaction/transaction'">
+					<text class="left">账单</text>
+					<text class="right">
+						查看我的账单<span class="icon iconfont icon-right"></span>
 					</text>
 				</navigator>
 			</view>
@@ -53,32 +62,23 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { getStorageSync,setStorageSync } from '@/utils/token'
 	import { mineQuery,getStore } from "@/api/home"
+	import { linkStore,getLinkStore } from '@/utils/utils'
 	export default defineComponent({
 		onShow: function() {
 			this.getMineQuery();
 		},
 		setup() {
-			const userName = ref("")
+			
 			const mine = ref({})
-			const descData = ref([
-				{value:"",label:"我的订单"},
-				{value:"",label:"我的订单"},
-			])
 			
 			const getMineQuery = ()=>{
-				getStore().then(res=>{
-					const s_id = res.data._id
-					setStorageSync("my_store",JSON.stringify(res.data))
+				getLinkStore().then(linkStore=>{
+					const { s_id,store_code,store_name } = linkStore
 					const token = getStorageSync("token")
+					const userName = getStorageSync("userName")
 					mineQuery({ s_id,token }).then(res=>{
-						mine.value = res.data
-						userName.value = res.data.store_user_name || res.data.store_user_phone || getStorageSync("userName")
-					})
-
-				},rej=>{
-					console.log(rej)
-					uni.navigateTo({
-					    url: '/pages/tabBar/home/store'
+						mine.value = {...res.data,userName,store_code,store_name}
+						console.log(mine.value)
 					})
 				})
 			}
@@ -89,7 +89,6 @@
 			}
 			
 			return {
-				userName,
 				mine,
 				getMineQuery,
 				toSetup

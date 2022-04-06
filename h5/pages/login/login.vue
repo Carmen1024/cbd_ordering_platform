@@ -46,7 +46,7 @@
 				// "store_name": "3892-茶百道济南章丘和谐广场店",
 				// "_id": "3734828b44084cf9a0c99847133b9242"
 				uni.switchTab({
-				    url: '/pages/tabBar/home/home'
+				    url: '/pages/tabBar/subscribe/subscribe'
 				})
 			}
 			

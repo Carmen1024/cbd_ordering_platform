@@ -7,6 +7,8 @@ const store = new Vuex.Store({
 
 // #ifdef VUE3
 import { createStore } from 'vuex'
+import { getStore } from "@/api/home"
+import { getStorageSync,setStorageSync } from '@/utils/token'
 const store = createStore({
 // #endif
 	state: {
@@ -22,7 +24,8 @@ const store = createStore({
 		leftWinActive: '/pages/component/view/view',
 		activeOpen: '',
 		menu: [],
-		univerifyErrorMsg: ''
+		univerifyErrorMsg: '',
+		frontPage:'/pages/tabBar/subscribe/subscribe'
 	},
 	mutations: {
 		login(state, provider) {
@@ -66,11 +69,17 @@ const store = createStore({
 		},
 		setUniverifyErrorMsg(state,payload = ''){
 			state.univerifyErrorMsg = payload
+		},
+		setLinkStore(state,linkStore){
+			state.linkStore = linkStore
 		}
 	},
 	getters: {
 		currentColor(state) {
 			return state.colorList[state.colorIndex]
+		},
+		linkStore(){
+			return JSON.parse(getStorageSync("linkStore")) || {r_g_id:"-1",s_id:"-1"}
 		}
 	},
 	actions: {
@@ -124,16 +133,22 @@ const store = createStore({
 				})
 			})
 		},
-		storeId : function(){
-			const my_store = JSON.parse(getStorageSync("my_store"))
-			if(my_store) return my_store._id
-			uni.showToast({
-			    title: "登录状态已失效，请重新登录",
-			    duration: 2000,
-				icon:"none"
-			});
-			uni.navigateTo({
-				url: '/pages/login/login'
+		getLinkStore: function({commit,state}){
+			return new Promise((resolve, reject) => {
+				const my_store = state.linkStore
+				// if(my_store) return my_store._id
+				if(my_store && my_store.s_id!="-1") resolve(my_store)
+				getStore().then(res=>{
+					const {_id:s_id,a_id:r_g_id,store_name,store_code} = res.data
+					// commit('setLinkStore', {s_id,r_g_id,store_name,store_code})
+					setStorageSync('linkStore',JSON.stringify({s_id,r_g_id,store_name,store_code}))
+					resolve({s_id,r_g_id,store_name,store_code})
+				},rej=>{
+					reject(rej)
+					uni.navigateTo({
+						url: '/pages/tabBar/home/store'
+					})
+				})
 			})
 		}
 	}

@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="address-container" v-show="address">
 		<view class="address-container-item">
 			<text>收件人</text>
@@ -41,15 +42,22 @@
 	import { getStorageSync } from '@/utils/token'
 	import { submitData } from './enum'
 	import areaPicker from './area'
+	import { linkStore } from '@/utils/utils'
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		onLoad:function(option){
 			this.setAddr(JSON.parse(getStorageSync("addressDetail")));
 		},
 		components:{
-			areaPicker
+			areaPicker,
+			BackLayer
 		},
 		setup() {
-
+			const back=reactive({
+				title:"地址详情",
+				backUrl:'/pages/address/address',
+			})
+			const { s_id,r_g_id } = linkStore()
 			const areaOperate = ref(false)
 			const address = ref({})
 			const layer=reactive({
@@ -68,7 +76,7 @@
 				}else{
 					delete layer.item
 					address.value={
-						"s_id":"10",
+						s_id,
 						"s_a_name":"",
 						"s_a_phone":"",
 						"s_a_province":"",
@@ -86,7 +94,8 @@
 				address,
 				setAddr,
 				layer,
-				areaOperate
+				areaOperate,
+				back
 			}
 		},
 		methods: {
@@ -119,7 +128,7 @@
 			insert(){
 				const params = this.address
 				params.s_a_default = this.address.s_a_default?"1":"0"
-				params.s_id = "10"
+				params.s_id = this.s_id
 				addressInsert(params).then(res=>{
 					uni.showToast({
 					    title: '新增成功',
@@ -132,7 +141,7 @@
 			update(){
 				const params = this.address
 				params.s_a_default = this.address.s_a_default?"1":"0"
-				params.s_id = "10"
+				params.s_id = this.s_id
 				addressUpdate(params).then(res=>{
 					uni.showToast({
 					    title: '保存成功',

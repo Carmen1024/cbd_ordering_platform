@@ -12,7 +12,8 @@
 					placeholder="请选择省"
 					popup-title="请选择省" 
 					@change="provinceonchange" 
-					@nodeclick="provinceonnodeclick">
+					@nodeclick="provinceonnodeclick"
+				>
 				</uni-data-picker>
 				<uni-data-picker
 					:localdata="cityList" 

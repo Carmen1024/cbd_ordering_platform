@@ -23,7 +23,8 @@
 			<view><text>您还没有收货地址</text></view>
 			<view><text>暂时无法下单</text></view>
 		</view>
-		<view v-show="ready">
+		<!-- <view v-show="ready"> -->
+		<view v-if="orderInformation.actual_buy_materials_msg">	
 			<!-- 实际物料 -->
 			<!-- orderInformation.actual_buy_materials_msg -->
 			<commodity-list :commodityList="orderInformation.actual_buy_materials_msg" />
@@ -46,20 +47,20 @@
 				</view>
 				<view class="other-item">
 					<text class="left">商品总额</text>
-					<text class="right"><span class="icon iconfont icon-jine"></span>{{orderInformation.total_price || 0}}元</text>
+					<text class="right"><span class="icon iconfont icon-jine"></span>{{(orderInformation.total_price /100).toFixed(2) || 0}}元</text>
 				</view>
 				<view class="other-item">
 					<text class="left">合计运费</text>
 					<text class="right"><span class="icon iconfont icon-jine"></span>{{orderInformation.freight_price || 0}}元</text>
 				</view>
-				<view class="other-item">
+				<view class="other-item" v-if="orderInformation.grade_discount_price!=0">
 					<text class="left">价格等级优惠</text>
 					<text class="right">
 						<span class="icon iconfont icon-jian"></span>
-						<span class="icon iconfont icon-jine"></span>{{orderInformation.grade_discount_price || 0}}元
+						<span class="icon iconfont icon-jine"></span>{{(orderInformation.grade_discount_price /100).toFixed(2) || 0}}元
 					</text>
 				</view>
-				<view class="other-item">
+				<view class="other-item" v-if="orderInformation.refund_price!=0">
 					<text class="left">使用返利金</text>
 					<text class="right">					
 						<span class="icon iconfont icon-jian"></span>
@@ -71,7 +72,7 @@
 				<view class="right">
 					<view class="totalPrice">
 						<text>合计：</text>
-						<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{orderInformation.actual_pay_price}}</text>
+						<text class="priceTotal"><span class="icon iconfont icon-jine"></span>{{(orderInformation.actual_pay_price /100).toFixed(2)}}</text>
 					</view>
 					<button class="uni-button" type="primary" size="mini" @click="lastConfirm">确认订单</button>
 					<!-- <button class="uni-button" type="primary" size="mini" @click="submit">去结算</button> -->
@@ -90,6 +91,7 @@
 	import commodityList from './commodityList'
 	import relaList from './relaList'
 	import cycleList from './cycleList'
+	import { linkStore } from '@/utils/utils'
 	export default defineComponent({
 		components:{
 			addressList,
@@ -105,6 +107,8 @@
 		  this.showAddress = false;
 		},
 		setup() {
+			
+			const { s_id,r_g_id } = linkStore()
 			const cartMaterialList = ref({})
 			const orderInformation = ref({})
 			const cartList = ref({})
@@ -161,13 +165,9 @@
 			// 创建订单
 			const getOrderInf=()=>{
 				ready.value = false
-				setTimeout(()=>{
-					uni.showToast({
-						icon:"loading",
-					    title: '正在加载中',
-					    duration: 10000
-					});
-				},100)
+				// setTimeout(()=>{
+				let constTitle = '正在加载订单'
+				// },100)
 				
 				const c_ids = []
 				cartList.value = cartMaterialList.value.map(item=>{
@@ -182,11 +182,17 @@
 					// 二次确认订单
 					getRela()
 					getCycle()
+					constTitle = "正在下单"
 				}
+				uni.showToast({
+					icon:"loading",
+				    title: constTitle,
+				    duration: 100000
+				});
 				const params = {
 					// "a_id": "1", //地址ID
-					"s_id": "10",//门店ID
-					"r_g_id": "1", //区域ID
+					s_id,//门店ID
+					r_g_id, //区域ID
 					"a_id": addr.value._id, //地址ID(string)
 					// "a_id":"10",
 					c_ids, //购物车ID集合(arr)
@@ -199,20 +205,24 @@
 						orderInformation.value = res.data
 						ready.value = true
 						resolve('resolve');
+					},rej=>{
+						uni.hideToast();
 					})
 				})
 			}
 			const lastConfirm=()=>{
 				getOrderInf().then(data=>{
-					uni.showModal({
-						content: '是否已经确认',
-						showCancel: true,
-						success: function (res) {
-							if (res.confirm) {
+					// uni.showModal({
+					// 	content: '是否已经确认',
+					// 	showCancel: true,
+					// 	success: function (res) {
+					// 		if (res.confirm) {
 								submit()
-							}
-						}
-					})
+							// }
+						// }
+					// })
+				},rej=>{
+					uni.hideToast();
 				})
 			}
 			// 最终确认下单了才能提交
@@ -255,7 +265,7 @@
 			}
 			const addrList = ref([])
 			const getAddressList = ()=>{
-				const params={"s_id":"10"}
+				const params={s_id}
 				addressQuery(params).then(res=>{
 					addrList.value = res.data.filter(item=>
 						item.s_a_audit_status==2

@@ -8,14 +8,12 @@
 		<view class="user-container-item">
 			<text>密码</text>
 			<input class="uni-input" :password="passwordType" v-model="user.password" placeholder="请输入密码" >
-			<span v-if="passwordType" @click="passwordType=false" class="icon iconfont icon-eye"></span>
-			<span v-else @click="passwordType=true" class="icon iconfont icon-closeeye"></span>
+			<span v-if="passwordType" @click="passwordType=false" class="icon iconfont icon-closeeye"></span>
+			<span v-else @click="passwordType=true" class="icon iconfont icon-eye"></span>
 		</view>
 		
-		<view style="text-align: right;">
-			<navigator class="" url="/pages/login/resetPassword">
-				<text>忘记密码</text>
-			</navigator>
+		<view style="text-align:right;">
+			<text @click="forgetPassword">忘记密码</text>
 		</view>
 		<button class="submit" type="primary" @click="submit">登录</button>
 	</view>
@@ -53,7 +51,11 @@
 				})
 
 			},
-			
+			forgetPassword(){
+				uni.switchTab({
+				    url: '/pages/tabBar/dashboard/dashboard'
+				})
+			}
 		}
 	})
 </script>

@@ -4,10 +4,10 @@
 			<view class="detail">
 				<view class="name left">{{bill.cost_name || '费用名称'}}</view>
 				<view class="price right" v-if="toMain" @click="toMainPage(bill)">
-					<span class="icon iconfont icon-jine"></span>{{bill.cost_money}}<span class="icon iconfont icon-right"></span>
+					<span class="icon iconfont icon-jine"></span>{{(bill.cost_money / 100).toFixed(2) || 0}}<span class="icon iconfont icon-right"></span>
 				</view>
 				<view class="price right" v-else>
-					<span class="icon iconfont icon-jine"></span>{{bill.cost_money}}
+					<span class="icon iconfont icon-jine"></span>{{(bill.cost_money / 100).toFixed(2) || 0}}
 				</view>
 			</view>
 		</view>

@@ -16,7 +16,7 @@
 				<view class="price">
 					<text class="total">
 						<span class="icon iconfont icon-jine"></span>
-						{{item.m_price || 10}}
+						{{item.m_price || 0}}
 					</text>
 					<view class="numHandle">
 						<text>{{item.r_m_count || 1}}</text>

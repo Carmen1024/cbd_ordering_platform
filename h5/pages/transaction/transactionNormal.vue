@@ -3,7 +3,7 @@
 	<view class="transaction-container">
 		<view class="condition">
 			<view class="time">
-				<!-- <span class="icon iconfont icon-riqi"></span> -->
+				<span class="icon iconfont icon-riqi"></span>
 				<view class="timeMod">
 					<uni-datetime-picker
 						ref="datetimePicker"
@@ -16,13 +16,13 @@
 					/>
 				</view>
 			</view>
-<!-- 			<view class="btn">
+			<view class="btn">
 				<text 
 					v-for="(item,index) in buttonOptions" 
 					@click="checkDays(item.days)">
 					{{item.label}}
 				</text>
-			</view> -->
+			</view>
 		</view>
 		<scroll-view 
 			class="right scroll-Y transactionData" v-if="transactionData.length>0"
@@ -191,6 +191,39 @@
 		// background-color: #f5f5f5;
 		// .uni-searchbar{
 		// }
+		.condition{
+			padding-bottom: 20rpx;
+			margin-bottom: 20rpx;
+			border-bottom: solid 1px #ddd;
+			.time{
+				display: flex;
+				align-items: center;
+				padding:20rpx;
+				.iconfont{
+					padding: 0 10rpx;
+					font-size:40rpx;
+					color:#fff;
+					color: $uni-color-primary;
+					font-weight: bold;
+				}
+				.timeMod{
+					background-color: #fff;
+					margin-left:20rpx;
+				}
+			}
+			.btn{
+				display: flex;
+				text{
+					text-align: center;
+					flex: 1;
+					margin: 0 20rpx;
+					padding:5rpx 0;
+					border-radius: 10rpx;
+					background-color: $uni-color-primary;
+					color:#fff;
+				}
+			}
+		}
 		.transactionData{
 
 			.loading{
@@ -253,25 +286,4 @@
 			}
 		}
 	}
-</style>
-<style lang="scss">
-	.condition{
-		padding:10px 20rpx 0 20rpx;
-		// .time{
-		// 	display: flex;
-		// 	align-items: center;
-		// 	padding:0;
-			// .timeMod{
-			// 	.uni-date-x--border{
-			// 	    border: none;
-			// 		.uni-date-x {
-			// 			padding:0 20rpx;
-			// 		    background: none;
-			// 		    color: #666;
-			// 		}
-			// 	}
-			// }
-		// }
-	}
-
 </style>

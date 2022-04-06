@@ -1,4 +1,5 @@
 <template>
+	<back-layer :back="back"  />
 	<view class="order-container">
 		<view class="orderData">
 				<!--  -->
@@ -36,7 +37,9 @@
 			<view class="other-item">
 				<view>
 					<text class="left">费用金额:</text>
-					<text class="right">{{orderDetailData.cost_money}}</text>
+					<text class="right">
+						<span class="icon iconfont icon-jine"></span>{{(orderDetailData.cost_money /100).toFixed(2) || 0}}
+					</text>
 				</view>
 			</view>
 			<view class="other-item">
@@ -67,28 +70,29 @@
 	import { statusData,tabOptions } from './enum'
 	import OButton from "./components/oButton.vue"
 	import OBill from "./components/oBill.vue"
+	import BackLayer from '@/components/backLayer'
 	export default defineComponent({
 		components:{
 			OButton,
-			OBill
+			OBill,
+			BackLayer
 		},
 		onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
 			console.log(option.o_s_id); //打印出上个页面传递的参数。
 			// this.o_id = option.o_id;
 			const { o_s_id,cost_code } = option
 			this.o_s_id = o_s_id
+			this.back.backUrl = '/pages/feeBill/detail?o_s_id='+o_s_id
 			this.getOrderDetail({ o_s_id,cost_code });
 		},
 		setup() {
 			const o_s_id = ref("")
+			const back=reactive({
+				title:"费用单明细",
+				backUrl:'/pages/feeBill/detail?o_s_id=',
+			})
 			const orderDetailData = ref({})
 			const getOrderDetail=(params)=>{
-				// const res = {
-				// 	"data":{
-				// 		"cost_money": "1",　//费用金额
-				// 		"code_desc": "2022年2月费用"//费用描述
-				// 	}
-				// }
 				costMain(params).then(res=>{
 					orderDetailData.value = res.data
 				})
@@ -96,7 +100,8 @@
 			return {
 				getOrderDetail,
 				orderDetailData,
-				o_s_id
+				o_s_id,
+				back
 			}
 		},
 		methods:{
@@ -109,7 +114,7 @@
 	.order-container{
 		position: relative;
 		width: 100%;
-		height: calc(100vh - 50px);
+		height: calc(100vh - 100rpx);
 		// margin-bottom:100rpx;
 		overflow-x: hidden;
 		overflow-y: auto;
