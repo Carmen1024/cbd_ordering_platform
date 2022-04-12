@@ -13,7 +13,9 @@
 		</view>
 		
 		<view style="text-align:right;">
-			<text @click="forgetPassword">忘记密码</text>
+			<navigator class="" url="/pages/login/resetPassword">
+				<text>忘记密码</text>
+			</navigator>
 		</view>
 		<button class="submit" type="primary" @click="submit">登录</button>
 	</view>
@@ -47,15 +49,9 @@
 					setStorageSync('token',res.data.token)
 					setStorageSync("userName",user_phone)
 					this.$emit("loginAction")
-
 				})
 
 			},
-			forgetPassword(){
-				uni.switchTab({
-				    url: '/pages/tabBar/dashboard/dashboard'
-				})
-			}
 		}
 	})
 </script>

@@ -1,8 +1,8 @@
 <template>
 	<view class="user-container">
 		<account @loginAction="action" v-if="style==0" />
-		<!-- <verification @loginAction="action" v-else /> -->
-<!-- 		<view class="user-container-style">
+		<verification @loginAction="action" v-else />
+		<view class="user-container-style">
 			<view>
 				其他登录方式
 			</view>
@@ -17,7 +17,7 @@
 				</view>
 			</view>
 
-		</view> -->
+		</view>
 	
 	</view>
 </template>
@@ -27,7 +27,7 @@
 	import { setStorageSync } from '@/utils/token'
 	import Account from './components/account.vue'
 	import verification from "./components/verification.vue"
-	import { getStore } from "@/api/home"
+	// import { getStore } from "@/api/home"
 	export default defineComponent({
 		components:{
 			Account,

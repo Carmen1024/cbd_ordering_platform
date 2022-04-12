@@ -244,7 +244,7 @@
 		}
 		.timeMod{
 			background-color: #fff;
-			padding:20rpx;
+			padding:0 20rpx 20rpx 20rpx;
 		}
 		.tab{
 			// width: 100%;

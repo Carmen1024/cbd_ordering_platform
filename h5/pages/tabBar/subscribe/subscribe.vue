@@ -284,7 +284,7 @@
 			overflow: hidden;
 			height: calc(100% - 200rpx);
 			.classifyList{
-				width: 150rpx;
+				width: 20%;
 				height: 100%;
 				background: #f5f5f5;
 				overflow-x: hidden;
@@ -299,7 +299,7 @@
 				}
 			}
 			.materialList{
-				width: calc(100% - 155rpx);
+				width: 80%;
 				height: 100%;
 				overflow-x: hidden;
 				overflow-y:auto;

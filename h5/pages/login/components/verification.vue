@@ -7,7 +7,12 @@
 				<text>忘记密码</text>
 			</navigator>
 		</view>
-		<button class="submit" type="primary" @click="submit">确认</button>
+		<button 
+			class="submit" 
+			type="primary"
+			@click="submit"
+			:disabled="user.phone!='' && user.code!='' ? false : true"
+		>确认</button>
 	</view>
 </template>
 
@@ -15,36 +20,43 @@
 	import { defineComponent,ref,reactive } from "vue"
 	import { setStorageSync } from '@/utils/token'
 	import codeMode from './code.vue'
-	import { getPhoneCode,resetPass } from '@/api/login'
+	import { loginByCode } from '@/api/login'
+	import { useStore } from 'vuex'
+	import { validateEmpty } from '@/utils/validate'
 	export default defineComponent({
 		components:{
 			codeMode
 		},
-		setup() {
-
+		setup(props,cxt) {
+			const store = useStore()
 			const sendDisable = ref(false)
 			const user = ref({
 				phone:"",
 				code:""
 			})
+			async function submit(){
+				const {phone:user_phone,code:verificationCode} = user.value
+				await validateEmpty(user_phone,11)
+				await validateEmpty(verificationCode,6)
+				const verificationCodeKey = store.state.verificationCodeKey || ''
+				const params = {
+					"eq":{ user_phone },
+					verificationCode:parseInt(verificationCode),  //验证码
+					verificationCodeKey //获取验证码时返回的key
+				}
+				loginByCode(params).then(res=>{
+					setStorageSync('token',res.data.token)
+					setStorageSync("userName",user_phone)
+					cxt.emit("loginAction")
+				})
+			}
 			return {
 				user,
-				sendDisable
+				sendDisable,
+				submit
 			}
 		},
 		methods: {
-			submit(){
-				
-				const params = {
-					"eq":{
-						"user_phone":this.user.phone,
-						"phone_code":this.user.code
-					},
-				}
-				
-				setStorageSync('token','0f99a688f420243cda8d8166a4e69c4c')
-				this.$emit("loginAction")
-			},
 			sendCode(){
 				this.sendDisable = this.sendDisable ? false : true;
 			}

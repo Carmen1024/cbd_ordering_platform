@@ -32,6 +32,13 @@ export function getPhoneCode(data: object) {
     data
   })
 }
+export function loginByCode(data: object) {
+  return request({
+    url: '/g/login/login_with_store_code',
+    method: 'post',
+    data
+  })
+}
 
 export function resetPass(data: object) {
   return request({

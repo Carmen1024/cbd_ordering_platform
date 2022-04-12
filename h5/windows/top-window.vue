@@ -100,6 +100,7 @@
 		flex-direction: row;
 		align-items: center;
 		flex: 1;
+		font-weight: bold;
 	}
 	.logo image {
 		height: 30px;

@@ -1,6 +1,6 @@
 <template>
 	<view class="materialItem" v-for="(item,index) in materialDatas" @click="toMaterial(item)">
-		<view v-if="item.isFirst" class="classify" :id="`classify_${item.classifyId}`">
+		<view v-if="item.isFirst || item.isFirst==1" class="classify" :id="`classify_${item.classifyId}`">
 			{{item.classifyName}}
 		</view>
 		<view class="material">

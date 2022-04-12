@@ -1,7 +1,12 @@
 <template>
 	<view class="user-container-item">
 		<text>手机号</text>
-		<input :disabled="hasLogin" class="uni-input" v-model="user.phone" placeholder="请输入手机号" />
+		<input 
+			class="uni-input" 
+			v-model="user.phone" 
+			type="number"
+			placeholder="请输入手机号" 
+		/>
 	</view>
 	<view class="user-container-item">
 		<text>验证码</text>
@@ -15,6 +20,9 @@
 <script lang="ts">
 	import { defineComponent,ref,reactive } from "vue"
 	import { getPhoneCode,resetPass } from '@/api/login'
+	import { setStorageSync } from '@/utils/token'
+	import { useStore } from 'vuex'
+	import {validatePhone} from '@/utils/validate'
 	export default defineComponent({
 		props:{
 			user : {
@@ -33,34 +41,43 @@
 		setup(props) {
 			const sendDisable = ref(false)
 			const sentContent = ref("获取验证码")
+			const store = useStore()
+			
+			function setSendC(t){
+				sentContent.value = t + "秒后重新获取"
+				setTimeout(()=>{
+					if(t>1){
+						setSendC(--t)
+					}else{
+						sentContent.value = "获取验证码"
+						sendDisable.value = false
+					}
+				},1000)
+			}
+			const sendCode = async ()=>{
+				const user_phone = props.user.phone
+				
+				await validatePhone(user_phone)
+				
+				const params={
+					"eq":{ user_phone }
+				}
+				getPhoneCode(params).then(res=>{
+					const verificationCodeKey = res.data
+					store.commit('setVerificationCodeKey', verificationCodeKey)
+					sendDisable.value = sendDisable.value ? false : true;
+					setSendC(60)
+				})
+			}
+			
 			return {
 				sentContent,
-				sendDisable
+				sendDisable,
+				sendCode
 			}
 		},
 		methods: {
-			setSendC(t){
-				this.sentContent = t + "秒后重新获取"
-				setTimeout(()=>{
-					if(t>1){
-						this.setSendC(--t)
-					}else{
-						this.sentContent = "获取验证码"
-						this.sendDisable = false
-					}
-				},1000)
-			},
-			sendCode(){
-				const params={
-					"eq":{
-						"user_phone":this.user.phone
-					}
-				}
-				getPhoneCode(params).then(res=>{
-					this.sendDisable = this.sendDisable ? false : true;
-					this.setSendC(60)
-				})
-			}
+			
 			
 		}
 	})

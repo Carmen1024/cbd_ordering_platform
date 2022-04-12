@@ -81,7 +81,7 @@
 			const store = useStore()
 			const back=reactive({
 				title:"账单",
-				backUrl:store.state.frontPage,
+				backUrl:"/pages/tabBar/home/home",
 			})
 			const { s_id,r_g_id } = linkStore()
 			const transactionData = ref([])

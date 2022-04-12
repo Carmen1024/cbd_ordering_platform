@@ -23,9 +23,9 @@
 			<checkbox-group @change="checkboxChange" class="commodityList">
 				<view class="commodityItem" v-for="(item,index) in commodityData">
 					<checkbox 
-						:checked="item.checked && item.m_stock > item.m_c_count" 
+						:checked="item.checked" 
 						:value="item.m_id" 
-						:disabled="item.m_stock < item.m_c_count ? true : false" 
+						:disabled="(item.m_stock >= item.m_c_count || operateType==2) ? false : true" 
 					/>
 					<image :src="item.img || '/static/logo.jpg'"></image>
 					<view class="detail">
@@ -62,7 +62,7 @@
 					<text class="right" @click="deletesZeroList">清空失效商品</text>
 				</view>
 				<view class="commodityItem" v-for="(item,index) in stockZeroList">
-					<checkbox :checked="item.checked" :value="item.m_id" disabled/>
+					<!-- <checkbox :checked="item.checked" :value="item.m_id" disabled/> -->
 					<image :src="item.img || '/static/logo.jpg'"></image>
 					<view class="detail">
 						<view class="name">{{item.m_name || '物料名称'}}</view>
@@ -84,7 +84,7 @@
 			</view>
 			<view class="right">
 				<view v-if="operateType==1">
-					<text class="chosenTotal" v-if="chosenCountPrice.total>0">已选{{chosenCountPrice.total}}件，</text>
+					<text class="chosenTotal" v-if="chosenCountPrice.total>0">已选{{chosenCountPrice.total}}件,</text>
 					<text>总计:</text>
 					<text class="chosenPrice"><span class="icon iconfont icon-jine"></span>{{chosenCountPrice.price.toFixed(2)}}</text>
 					<button type="primary" size="mini" @click="submit">结算</button>
@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent,ref,reactive } from "vue"
+	import { defineComponent,ref,reactive,watch } from "vue"
 	import { cartCountAndPrice,cartInsert,cartMaterialsUpdate,cartList,cartDel } from '@/api/subscribe'
 	import { operateData } from './enum'
 	import { setStorageSync } from '@/utils/token'
@@ -111,6 +111,7 @@
 		},
 		computed:{
 			commodityData(){
+				console.log(this.cartMaterialList)
 				return this.cartMaterialList.map(item=>{
 					const num = item.m_prices ? item.m_prices[0].m_p_money : 0
 					console.log(num)
@@ -135,7 +136,6 @@
 			})
 			
 			const toCartInsert=(params)=>{
-				 
 				 cartInsert(params).then(res=>{
 					 butFreshList()
 				 })
@@ -151,16 +151,15 @@
 				cartMaterialList.value = []
 				cartList({ s_id }).then(res=>{
 					res.data.map(item=>{
-						item.old_count = item.m_c_count
-					});
-					res.data.map(item=>{
-						(item.m_stock==0 || item.c_valid==0) ? stockZeroList.value.push(item) : cartMaterialList.value.push(item)
+						const {m_stock=0,c_valid=0,m_c_count=0} = item;
+						item.old_count = m_c_count;
+						(m_stock==0 || c_valid==0) ? stockZeroList.value.push(item) : cartMaterialList.value.push(item)
 					})
 					const clist = res.data.filter(item=>{
 						return item.m_stock >= item.m_c_count
 					})
 					console.log(clist.length);
-					cbCheckDisabled.value = clist.length === res.data.length ? false : true
+					cbCheckDisabled.value = (clist.length === res.data.length || operateType.value==2) ? false : true
 					
 					// 如果正在管理则退出
 					if(operateType.value==2 && res.data.length==0){
@@ -175,16 +174,20 @@
 			const setChosenCountPrice=()=>{
 				
 				let items = cartMaterialList.value,price=0,total=0;
-				items.map(item=>{
-					if(item.checked && item.m_stock > item.m_c_count){
+				items.forEach(item=>{
+					if(operateType.value == 1 && item.m_stock < item.m_c_count){
+						item.checked = false
+					}
+					if(item.checked && item.m_stock >= item.m_c_count){
 						const m_c_count = parseInt(item.m_c_count)
 						total += (m_c_count || 0)
 						const p = item.m_price || 0
 						price += m_c_count * p
 					}
+					
 				})
-				
 				chosenCountPrice.value = {price,total}
+				console.log(cartMaterialList.value)
 			}
 			
 			// 全选按钮设置
@@ -198,7 +201,7 @@
 				const clist = items.filter(item=>{
 					return item.m_stock >= item.m_c_count
 				})
-				cbCheckDisabled.value = clist.length === items.length ? false : true
+				cbCheckDisabled.value = (clist.length === items.length || operateType.value==2) ? false : true
 			}
 			//重新设置购物车
 			const resetShoppingCart =()=>{
@@ -213,6 +216,15 @@
 				setChosenCountPrice()
 				setCbChecked()
 			}
+			// 直接侦听一个 ref
+			watch(operateType, (operateType, prevOperateType) => {
+				console.log(operateType)
+			  // if(operateType==2){ //正在管理中
+				  // setCbChecked()
+				  setChosenCountPrice()
+				  setCbChecked()
+			  // }
+			})
 			
 			return {
 				countAndPrice,
@@ -257,6 +269,7 @@
 				this.setChosenCountPrice()
 			},
 			setCheck(){
+				console.log(this.cartMaterialList)
 				let items = this.cartMaterialList
 				items.map(item=>{
 					this.$set(item,'checked',this.cbChecked)
@@ -500,6 +513,7 @@
 				box-shadow: 0 0 10rpx rgba(0, 0, 0, .1);
 				background: #fff;
 				border-radius: 10rpx;
+				
 			}
 		}
 		.zeroList{
@@ -536,6 +550,10 @@
 				font-size: 26rpx;
 				.name{
 					font-weight: bold;
+					height: 50rpx;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
 				}
 				.unit{
 					width: 100%;
@@ -587,7 +605,7 @@
 				margin-left: 10rpx;
 			}
 			.right{
-				width: calc(100% - 200rpx);
+				// width: calc(100% - 200rpx);
 				view{
 					display: flex;
 					justify-content: flex-end;
@@ -609,7 +627,7 @@
 						// }
 					}
 					button{
-						margin: 20rpx 20rpx;
+						margin: 0 20rpx 0 10rpx;
 						border-radius: 20rpx;
 						height: 60rpx;
 						line-height: 60rpx;

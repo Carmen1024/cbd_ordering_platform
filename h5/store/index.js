@@ -25,7 +25,8 @@ const store = createStore({
 		activeOpen: '',
 		menu: [],
 		univerifyErrorMsg: '',
-		frontPage:'/pages/tabBar/subscribe/subscribe'
+		frontPage:'/pages/tabBar/subscribe/subscribe',
+		verificationCodeKey:''
 	},
 	mutations: {
 		login(state, provider) {
@@ -57,6 +58,9 @@ const store = createStore({
 		setLeftWinActive(state, leftWinActive) {
 			state.leftWinActive = leftWinActive
 		},
+		setVerificationCodeKey(state, verificationCodeKey) {
+			state.verificationCodeKey = verificationCodeKey
+		},
 		setActiveOpen(state, activeOpen) {
 			state.activeOpen = activeOpen
 		},
@@ -80,7 +84,7 @@ const store = createStore({
 		},
 		linkStore(){
 			return JSON.parse(getStorageSync("linkStore")) || {r_g_id:"-1",s_id:"-1"}
-		}
+		},
 	},
 	actions: {
 		// lazy loading openid

@@ -1460,3 +1460,6 @@ radio-group label, checkbox-group label{
 uni-button[size='mini']{
 	margin:0 10rpx;
 }
+.uni-tabbar-bottom .uni-tabbar{
+	/* padding-bottom: 10px; */
+}

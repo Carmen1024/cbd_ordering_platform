@@ -10,7 +10,12 @@
 				<span v-if="passwordType" @click="passwordType=false" class="icon iconfont icon-closeeye"></span>
 				<span v-else @click="passwordType=true" class="icon iconfont icon-eye"></span>
 			</view>
-			<button class="submit" type="primary" @click="submit">确认</button>
+			<button 
+				class="submit" 
+				type="primary" 
+				@click="submit"
+				:disabled="user.phone && user.code && user.newpassword ? false : true"
+			>确认</button>
 		</view>
 	</view>
 </template>
@@ -21,12 +26,15 @@
 	import { resetPass } from '@/api/login'
 	import { getStorageSync } from '@/utils/token'
 	import BackLayer from '@/components/backLayer'
+	import { useStore } from 'vuex'
+	import { validateEmpty } from '@/utils/validate'
 	export default defineComponent({
 		components:{
 			codeMode,
 			BackLayer
 		},
 		setup() {
+			const store = useStore()
 			const back=reactive({
 				title:"重置密码",
 				backUrl:"/pages/tabBar/home/setup",
@@ -36,30 +44,26 @@
 			const passwordType = ref(true)
 			const password=ref(true)
 			const user = ref({
-				phone:getStorageSync("userName"),
+				phone:getStorageSync("userName") || '',
 				code:"",
 				newpassword:""
 			})
-			return {
-				user,
-				password,
-				sendDisable,
-				passwordType,
-				sentContent,
-				back
-			}
-		},
-		methods: {
-			submit(){
-				console.log(this.user)
+			const submit = async ()=>{
+				const {phone:user_phone,code:verificationCode,newpassword:user_pass} = user.value
+				await validateEmpty(user_phone,11)
+				await validateEmpty(verificationCode,6)
+				await validateEmpty(user_pass)
+				const verificationCodeKey = store.state.verificationCodeKey || ''
+				
 				const params = {
 					"eq":{
-						"user_phone":this.user.phone,
-						"phone_code":this.user.code
+						user_phone,
 					},
 					"set":{
-						"user_pass":this.user.newpassword
-					}
+						user_pass
+					},
+					verificationCode:parseInt(verificationCode),  //验证码
+					verificationCodeKey //获取验证码时返回的key
 				}
 				resetPass(params).then(res=>{
 					uni.showToast({
@@ -71,7 +75,19 @@
 					    url: '/pages/login/login'
 					})
 				})
-			},
+			}
+			return {
+				user,
+				password,
+				sendDisable,
+				passwordType,
+				sentContent,
+				back,
+				submit
+			}
+		},
+		methods: {
+			
 			setSendC(t){
 				this.sentContent = t + "秒后重新获取"
 				setTimeout(()=>{

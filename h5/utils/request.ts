@@ -1,11 +1,11 @@
 import { getStorageSync } from './token'
 import { getLinkStore,reLogin } from './utils'
 
-const host = "http://113.125.84.255:10000"
+const host = "http://192.168.110.41:10000"
 //113.125.84.255:8007
 //192.168.99.5 丁武军
 //192.168.99.174 何龙getStorageSync
-//113.125.84.255 服务器
+//113.125.84.255:10000 服务器
 
 export const request = async (dataFormat)=>{
 	
@@ -74,7 +74,7 @@ const dataValidation = (data)=>{
 const intercept= (url)=>{
 	
 	return new Promise(function(resolve, reject){
-		if(getStorageSync('token') || url.indexOf("login/login")>-1){
+		if(getStorageSync('token') || url.indexOf("/login/")>-1){
 			resolve(true)
 		}else{
 			reLogin()

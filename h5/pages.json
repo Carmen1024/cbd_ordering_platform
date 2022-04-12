@@ -51,7 +51,7 @@
 		},{
 		    "path" : "pages/tabBar/order/detail",
 		    "style": {
-		        "navigationBarTitleText": "",
+		        "navigationBarTitleText": "茶茶订货",
 		    	"navigationStyle":"custom",
 				"enablePullDownRefresh": false
 		    }
@@ -59,7 +59,7 @@
 		{
 		    "path" : "pages/tabBar/home/home",
 		    "style": {
-		        "navigationBarTitleText": "我的",
+		        "navigationBarTitleText": "茶茶订货",
 				"navigationStyle":"custom",
 				"enablePullDownRefresh": false
 		    }
@@ -68,7 +68,7 @@
 		    "path" : "pages/order/order",
 		    "style" :                                                                                    
 		    {
-		        "navigationBarTitleText": "确认订单",
+		        "navigationBarTitleText": "茶茶订货",//确认订单
 				"navigationStyle":"",
 		        "enablePullDownRefresh": false
 		    }
@@ -85,7 +85,7 @@
         ,{
             "path" : "pages/notice/notice",
             "style" :{
-                "navigationBarTitleText": "消息",
+                "navigationBarTitleText": "茶茶订货",//消息",
 				"navigationStyle":"",
                 "enablePullDownRefresh": false
             }
@@ -95,7 +95,7 @@
             "path" : "pages/feeBill/feeBill",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "费用单",
+                "navigationBarTitleText": "茶茶订货",//费用单",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -105,7 +105,7 @@
 		    "path" : "pages/feeBill/detail",
 		    "style" :                                                                                    
 		    {
-		        "navigationBarTitleText": "费用单详情",
+		        "navigationBarTitleText": "茶茶订货",//费用单详情",
 				"navigationStyle":"custom",
 		        "enablePullDownRefresh": false
 		    }
@@ -116,7 +116,7 @@
             "style" :                                                                                    
             {
                 // "navigationBarTitleText": "小茶订货",
-				"navigationBarTitleText": "物料查询",
+				"navigationBarTitleText": "茶茶订货",//物料查询",
 				// "navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -126,7 +126,7 @@
             "path" : "pages/address/address",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "收货地址",
+                "navigationBarTitleText": "茶茶订货",//收货地址",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
 				
@@ -137,7 +137,7 @@
             "path" : "pages/address/detail",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "编辑收货地址",
+                "navigationBarTitleText": "茶茶订货",//编辑收货地址",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -147,7 +147,7 @@
             "path" : "pages/login/login",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "登录",
+                "navigationBarTitleText": "茶茶订货",//登录",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -157,7 +157,7 @@
             "path" : "pages/login/resetPassword",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "重置密码",
+                "navigationBarTitleText": "茶茶订货",//重置密码",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             } 
@@ -166,7 +166,7 @@
             "path" : "pages/tabBar/order/returnList",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "退货",
+                "navigationBarTitleText": "茶茶订货",//退货",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -176,7 +176,7 @@
             "path" : "pages/pay/payback",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "支付",
+                "navigationBarTitleText": "茶茶订货",//支付",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -186,7 +186,7 @@
             "path" : "pages/feeBill/billMain",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "费用单明细",
+                "navigationBarTitleText": "茶茶订货",//费用单明细",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -196,7 +196,7 @@
             "path" : "pages/receive/list",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "发货单列表",
+                "navigationBarTitleText": "茶茶订货",//发货单列表",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -206,7 +206,7 @@
             "path" : "pages/receive/detail",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "发货单详情",
+                "navigationBarTitleText": "茶茶订货",//发货单详情",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -216,7 +216,7 @@
             "path" : "pages/tabBar/order/refund",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "申请退货",
+                "navigationBarTitleText": "茶茶订货",//申请退货",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -226,7 +226,7 @@
             "path" : "pages/tabBar/home/setup",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "设置",
+                "navigationBarTitleText": "茶茶订货",//设置",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -236,7 +236,7 @@
             "path" : "pages/tabBar/home/coupon",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "优惠券",
+                "navigationBarTitleText": "茶茶订货",//优惠券",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -246,7 +246,7 @@
             "path" : "pages/tabBar/home/store",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "门店",
+                "navigationBarTitleText": "茶茶订货",//门店",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -256,7 +256,7 @@
             "path" : "pages/transaction/transaction",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "账单",
+                "navigationBarTitleText": "茶茶订货",//账单",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -266,7 +266,7 @@
             "path" : "pages/transaction/detail",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "账单详情",
+                "navigationBarTitleText": "茶茶订货",//账单详情",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -276,7 +276,7 @@
             "path" : "pages/login/forgetPassword",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "忘记密码",
+                "navigationBarTitleText": "茶茶订货",//忘记密码",
 				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -286,7 +286,7 @@
             "path" : "pages/material/material",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "物料详情",
+                "navigationBarTitleText": "茶茶订货",//物料详情",
                 "navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
@@ -317,6 +317,7 @@
 		"borderStyle": "black",
 		"backgroundColor": "#fff",
 		"fontWeight": "bold",
+		"height":"50px",
 		"list": [
 			// {
 			// 	"pagePath": "pages/tabBar/dashboard/dashboard",
